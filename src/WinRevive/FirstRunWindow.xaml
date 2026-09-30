@@ -5,13 +5,13 @@
         Width="620" Height="470" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBackground}">
-  <Grid Margin="28">
+  <Grid Margin="32">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     <StackPanel>
-      <TextBlock Text="WinRevive'e hoş geldiniz" FontSize="26" FontWeight="SemiBold"/>
+      <TextBlock Text="WinRevive'e hoş geldiniz" FontSize="28" FontWeight="SemiBold"/>
       <TextBlock Text="Bu sihirbaz yerel tercihleri ayarlar. Sistem değişikliği yapmadan önce her işlem açıklanır ve snapshot alınır."
                  Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,10,0,20"/>
       <TextBlock Text="Arayüz teması" FontWeight="SemiBold"/>

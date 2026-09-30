@@ -63,7 +63,9 @@ Etiketlenmiş bir sürüm oluşturulduğunda workflow:
 3. Inno Setup ile `WinRevive-Setup.exe` oluşturur.
 4. Publish klasörünü ve Setup.exe'yi GitHub Release'e ekler.
 
-Kurulum için önerilen yol: private GitHub Release içinden Setup.exe'yi indirip çalıştırın, hedef klasörü onaylayın,
+Kurulum paketi modern Inno Setup sihirbazı kullanır, varsayılan olarak kullanıcı profilindeki
+`%LocalAppData%\Programs\WinRevive` konumuna kurulur ve yönetici yetkisi istemez.
+Masaüstü kısayolu isteğe bağlıdır. Kurulum için önerilen yol: private GitHub Release içinden Setup.exe'yi indirip çalıştırın, hedef klasörü onaylayın,
 kurulum tamamlandıktan sonra Başlat menüsünden WinRevive Control Center'ı açın.
 Uygulama ilk açılışta yönetici yetkisi istemez; yalnızca yetki gerektiren özellikler
 gelecekte ayrı ve açıklamalı bir UAC akışıyla eklenecektir.

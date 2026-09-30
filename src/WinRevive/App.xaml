@@ -4,18 +4,63 @@
   <Application.Resources>
     <SolidColorBrush x:Key="WindowBackground" Color="#0F172A"/>
     <SolidColorBrush x:Key="CardBackground" Color="#1E293B"/>
+    <SolidColorBrush x:Key="SurfaceBackground" Color="#162238"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#2B3B55"/>
     <SolidColorBrush x:Key="PrimaryText" Color="#F8FAFC"/>
     <SolidColorBrush x:Key="MutedText" Color="#94A3B8"/>
     <SolidColorBrush x:Key="AccentBrush" Color="#38BDF8"/>
+    <SolidColorBrush x:Key="SecondaryButtonBackground" Color="#26364F"/>
+    <SolidColorBrush x:Key="SecondaryButtonForeground" Color="#E2E8F0"/>
     <Style TargetType="TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
     <Style TargetType="Button">
       <Setter Property="Foreground" Value="#0F172A"/>
       <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
-      <Setter Property="Padding" Value="14,8"/>
-      <Setter Property="Margin" Value="0,0,8,0"/>
+      <Setter Property="Padding" Value="14,9"/>
+      <Setter Property="Margin" Value="0,0,8,8"/>
       <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="{DynamicResource SecondaryButtonBackground}"/>
+      <Setter Property="Foreground" Value="{DynamicResource SecondaryButtonForeground}"/>
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="10,8"/>
+    </Style>
+    <Style TargetType="ComboBox">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+      <Setter Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="Padding" Value="8"/>
+    </Style>
+    <Style TargetType="TabControl">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style TargetType="TabItem">
+      <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
+      <Setter Property="Padding" Value="16,12"/>
+      <Setter Property="Margin" Value="0,0,10,6"/>
+      <Setter Property="FontSize" Value="14"/>
+    </Style>
+    <Style x:Key="PanelCard" TargetType="Border">
+      <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="Padding" Value="20"/>
+    </Style>
+    <Style x:Key="SectionTitle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Margin" Value="0,0,0,6"/>
     </Style>
   </Application.Resources>
 </Application>
