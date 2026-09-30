@@ -39,6 +39,7 @@ Temel ilkeler:
 - Ortak adlandırılmış snapshot altyapısı; kural yedekleri `LocalAppData\WinRevive\snapshots` altında tutulur
 - Windows WMI üzerinden GPU, pil ve pagefile teşhisi; erişilemeyen bilgiler açıkça bilinmiyor olarak raporlanır
 - Salt-okunur kurulu uygulama envanteri ve Defender, Secure Boot, TPM, BitLocker güvenlik özeti
+- Snapshot'lı accent renk kişiselleştirmesi
 - xUnit test altyapısı
 - Inno Setup başlangıç betiği
 

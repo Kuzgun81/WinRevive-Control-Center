@@ -40,7 +40,8 @@ public partial class MainWindow : Window
             startup,
             new StartupManagementService(startup, snapshots, new OperationHistoryService()),
             search,
-            new OptimizationProfileService(minimal, new PowerProfileService(), new OperationHistoryService()));
+            new OptimizationProfileService(minimal, new PowerProfileService(), new OperationHistoryService()),
+            new PersonalizationService(snapshots, new OperationHistoryService()));
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;

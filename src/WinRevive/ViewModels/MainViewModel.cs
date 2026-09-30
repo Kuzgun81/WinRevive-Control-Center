@@ -18,12 +18,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly StartupManagementService _startupManagement;
     private readonly SearchService _search;
     private readonly OptimizationProfileService _profiles;
+    private readonly PersonalizationService _personalization;
     private readonly OperationHistoryService _history;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
@@ -34,6 +35,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _startupManagement = startupManagement;
         _search = search;
         _profiles = profiles;
+        _personalization = personalization;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -50,6 +52,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ApplyGamingProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("gaming")));
         ApplyBatteryProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("battery")));
         ApplyLowHardwareProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("low-hardware")));
+        ApplyBlueAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("00A4EF")));
+        ApplyPurpleAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("8764B8")));
+        RevertAccentCommand = new ActionCommand(() => Run(() => _personalization.RevertAccent()));
         Refresh();
         RefreshStartup();
     }
@@ -81,6 +86,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ApplyGamingProfileCommand { get; }
     public ICommand ApplyBatteryProfileCommand { get; }
     public ICommand ApplyLowHardwareProfileCommand { get; }
+    public ICommand ApplyBlueAccentCommand { get; }
+    public ICommand ApplyPurpleAccentCommand { get; }
+    public ICommand RevertAccentCommand { get; }
 
     private void Refresh()
     {
