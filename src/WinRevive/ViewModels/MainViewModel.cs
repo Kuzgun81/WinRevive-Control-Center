@@ -23,12 +23,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly OperationHistoryService _history;
     private readonly SnapshotService _snapshots;
     private readonly ExplorerPersonalizationService _explorer;
+    private readonly CleanupService _cleanup;
+    private long _cleanupEstimatedBytes;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
     private string _wallpaperPath = string.Empty;
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots, ExplorerPersonalizationService explorer)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots, ExplorerPersonalizationService explorer, CleanupService cleanup)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
@@ -43,6 +45,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _applications = applications;
         _snapshots = snapshots;
         _explorer = explorer;
+        _cleanup = cleanup;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -75,10 +78,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
         DisableCompactViewCommand = new ActionCommand(() => Run(() => _explorer.ApplyCompactView(false)));
         OpenThisPcCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(true)));
         OpenHomeCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(false)));
+        ScanCleanupCommand = new ActionCommand(ScanCleanup);
+        DeleteCleanupCommand = new ActionCommand(DeleteCleanup);
         Refresh();
         RefreshStartup();
         RefreshApplications();
         RefreshSnapshots();
+        ScanCleanup();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -87,6 +93,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<StartupEntry> StartupEntries { get; } = [];
     public ObservableCollection<InstalledApplication> InstalledApplications { get; } = [];
     public ObservableCollection<SnapshotService.SnapshotEntry> Snapshots { get; } = [];
+    public ObservableCollection<CleanupService.CleanupItem> CleanupItems { get; } = [];
+    public CleanupService.CleanupItem? SelectedCleanupItem { get; set; }
     public SnapshotService.SnapshotEntry? SelectedSnapshot { get; set; }
     public StartupEntry? SelectedStartup { get; set; }
     public SystemInfo SystemInfo { get; private set; } = new(
@@ -99,6 +107,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string WallpaperPath { get => _wallpaperPath; set => Set(ref _wallpaperPath, value); }
     public string Theme { get => _theme; set { if (Set(ref _theme, value)) _settings.Theme = value; } }
     public string MinimalProfileState => _minimalProfile.Detect();
+    public string CleanupSummary => $"{CleanupItems.Count} dosya • {FormatBytes(_cleanupEstimatedBytes)} tahmini alan";
     public ICommand RefreshCommand { get; }
     public ICommand ApplyTransparencyCommand { get; }
     public ICommand RevertTransparencyCommand { get; }
@@ -128,6 +137,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand DisableCompactViewCommand { get; }
     public ICommand OpenThisPcCommand { get; }
     public ICommand OpenHomeCommand { get; }
+    public ICommand ScanCleanupCommand { get; }
+    public ICommand DeleteCleanupCommand { get; }
 
     private void Refresh()
     {
@@ -181,6 +192,51 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Snapshots.Clear();
         foreach (var snapshot in _snapshots.List())
             Snapshots.Add(snapshot);
+    }
+
+    private void ScanCleanup()
+    {
+        try
+        {
+            CleanupItems.Clear();
+            foreach (var item in _cleanup.Scan()) CleanupItems.Add(item);
+            _cleanupEstimatedBytes = CleanupItems.Sum(item => item.SizeBytes);
+            OnPropertyChanged(nameof(CleanupSummary));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Cleanup scan failed.", ex);
+            LastOperation = "Temizlik taraması başarısız: " + ex.Message;
+        }
+    }
+
+    private void DeleteCleanup()
+    {
+        try
+        {
+            var result = _cleanup.Delete(CleanupItems.ToArray());
+            _history.Record("Cleanup", result.Failures.Count == 0 ? "Applied" : "Partial",
+                $"{result.DeletedFiles} dosya; {FormatBytes(result.FreedBytes)} boşaltıldı.");
+            LastOperation = result.Failures.Count == 0
+                ? $"Temizlik tamamlandı: {result.DeletedFiles} dosya, {FormatBytes(result.FreedBytes)}."
+                : $"Temizlik kısmen tamamlandı: {result.DeletedFiles} dosya; {result.Failures.Count} hata.";
+            ScanCleanup();
+            LoadRecentOperations();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Cleanup failed.", ex);
+            LastOperation = "Temizlik başarısız: " + ex.Message;
+        }
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        string[] units = ["B", "KB", "MB", "GB"];
+        var value = (double)bytes;
+        var unit = 0;
+        while (value >= 1024 && unit < units.Length - 1) { value /= 1024; unit++; }
+        return $"{value:0.##} {units[unit]}";
     }
 
     private void DeleteSelectedSnapshot()

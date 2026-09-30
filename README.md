@@ -43,6 +43,7 @@ Temel ilkeler:
 - Search onarımı için ayrı, allowlist tabanlı elevated host sözleşmesi ve UAC akışı
 - Dosya seçicili, snapshot'lı ve geri alınabilir duvar kâğıdı kişiselleştirmesi
 - Explorer uzantı, gizli dosya, kompakt görünüm ve açılış konumu ayarları
+- Tarama ve silmeyi ayıran güvenli geçici dosya temizleme merkezi
 - xUnit test altyapısı
 - Inno Setup başlangıç betiği
 

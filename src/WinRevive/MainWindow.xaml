@@ -163,6 +163,37 @@
         </ScrollViewer>
       </TabItem>
 
+      <TabItem Header="Temizlik">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="0,18,12,0">
+            <TextBlock Text="Güvenli temizlik" Style="{StaticResource SectionTitle}"/>
+            <TextBlock Text="Tarama ve silme ayrıdır. Downloads, Desktop ve belgeler otomatik olarak seçilmez; yalnızca onaylı geçici alanlar gösterilir."
+                       Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,14"/>
+            <Border Style="{StaticResource PanelCard}">
+              <StackPanel>
+                <DockPanel>
+                  <TextBlock Text="{Binding CleanupSummary}" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
+                  <Button DockPanel.Dock="Right" Content="Yeniden tara" Command="{Binding ScanCleanupCommand}"/>
+                  <Button DockPanel.Dock="Right" Content="Taranan dosyaları temizle" Command="{Binding DeleteCleanupCommand}"
+                          Style="{StaticResource SecondaryButton}" Margin="0,0,8,8"/>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding CleanupItems}" SelectedItem="{Binding SelectedCleanupItem}" MaxHeight="360">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Margin="4">
+                        <TextBlock Text="{Binding LocationName}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Path}" Foreground="{DynamicResource MutedText}" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding SizeBytes}" Foreground="{DynamicResource MutedText}"/>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
       <TabItem Header="Kişiselleştirme">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Windows görünüm merkezi" FontSize="19" FontWeight="SemiBold"/>
