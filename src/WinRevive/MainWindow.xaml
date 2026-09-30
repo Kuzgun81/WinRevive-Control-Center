@@ -122,6 +122,37 @@
         </ScrollViewer>
       </TabItem>
 
+      <TabItem Header="Başlangıç / Search">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="0,18,12,0">
+            <TextBlock Text="Başlangıç ve Windows Search yönetimi" FontSize="19" FontWeight="SemiBold"/>
+            <TextBlock Text="Yalnızca kullanıcı kapsamındaki Run/RunOnce girdileri değiştirilebilir. Bilgisayar kapsamı salt-okunur kalır."
+                       Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,14"/>
+            <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18">
+              <StackPanel>
+                <DockPanel>
+                  <TextBlock Text="Başlangıç girdileri" FontSize="16" FontWeight="SemiBold"/>
+                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshStartupCommand}"/>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding StartupEntries}" SelectedItem="{Binding SelectedStartup}" Margin="0,10,0,0" MaxHeight="220"/>
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                  <Button Content="Seçileni devre dışı bırak" Command="{Binding DisableSelectedStartupCommand}"/>
+                  <Button Content="Son değişikliği geri al" Command="{Binding RevertStartupCommand}" Background="#CBD5E1"/>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,14,0,0">
+              <StackPanel>
+                <TextBlock Text="Windows Search" FontSize="16" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding SystemInfo.SearchSummary}" Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
+                <TextBlock Text="Onarım servisi durdurup yeniden başlatır; yönetici yetkisi gerekebilir." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                <Button Content="Search servisini onar / yeniden başlat" Command="{Binding RepairSearchCommand}" HorizontalAlignment="Left" Margin="0,12,0,0"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
       <TabItem Header="İşlem Geçmişi">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Apply / Verify / Revert geçmişi" FontSize="19" FontWeight="SemiBold"/>

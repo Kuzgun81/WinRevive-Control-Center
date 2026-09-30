@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using System.ServiceProcess;
 
 namespace WinRevive.Services;
 
@@ -21,5 +22,19 @@ public sealed class SearchService
             3 => "Windows Search: elle başlatma",
             _ => "Windows Search: yapılandırılmış"
         };
+    }
+
+    public string Repair()
+    {
+        if (!OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException("Windows Search onarımı yalnızca Windows'ta kullanılabilir.");
+        using var service = new ServiceController("WSearch");
+        if (service.Status != ServiceControllerStatus.Stopped &&
+            service.Status != ServiceControllerStatus.StopPending)
+            service.Stop();
+        service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20));
+        service.Start();
+        service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(20));
+        return "Windows Search servisi yeniden başlatıldı ve doğrulandı.";
     }
 }

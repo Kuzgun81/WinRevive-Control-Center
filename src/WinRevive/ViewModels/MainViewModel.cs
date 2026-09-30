@@ -14,18 +14,24 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly FileLogger _logger;
     private readonly TransparencyOptimizationRule _rule;
     private readonly MinimalProfileService _minimalProfile;
+    private readonly StartupService _startup;
+    private readonly StartupManagementService _startupManagement;
+    private readonly SearchService _search;
     private readonly OperationHistoryService _history;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
         _logger = logger;
         _rule = rule;
         _minimalProfile = minimalProfile;
+        _startup = startup;
+        _startupManagement = startupManagement;
+        _search = search;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -34,12 +40,19 @@ public sealed class MainViewModel : INotifyPropertyChanged
         RevertTransparencyCommand = new ActionCommand(() => Run(() => _rule.Revert()));
         ApplyMinimalProfileCommand = new ActionCommand(() => Run(() => _minimalProfile.Apply()));
         RevertMinimalProfileCommand = new ActionCommand(() => Run(() => _minimalProfile.Revert()));
+        RefreshStartupCommand = new ActionCommand(RefreshStartup);
+        DisableSelectedStartupCommand = new ActionCommand(DisableSelectedStartup);
+        RevertStartupCommand = new ActionCommand(() => RunStartup(_startupManagement.RevertLatest));
+        RepairSearchCommand = new ActionCommand(() => Run(() => _search.Repair()));
         Refresh();
+        RefreshStartup();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<ThemeOption> Themes { get; }
     public ObservableCollection<string> RecentOperations { get; } = [];
+    public ObservableCollection<StartupEntry> StartupEntries { get; } = [];
+    public StartupEntry? SelectedStartup { get; set; }
     public SystemInfo SystemInfo { get; private set; } = new(
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...");
@@ -53,6 +66,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand RevertTransparencyCommand { get; }
     public ICommand ApplyMinimalProfileCommand { get; }
     public ICommand RevertMinimalProfileCommand { get; }
+    public ICommand RefreshStartupCommand { get; }
+    public ICommand DisableSelectedStartupCommand { get; }
+    public ICommand RevertStartupCommand { get; }
+    public ICommand RepairSearchCommand { get; }
 
     private void Refresh()
     {
@@ -84,6 +101,29 @@ public sealed class MainViewModel : INotifyPropertyChanged
             LoadRecentOperations();
         }
         catch (Exception ex) { _logger.Error("Optimization operation failed.", ex); LastOperation = "İşlem başarısız: " + ex.Message; }
+    }
+
+    private void RefreshStartup()
+    {
+        StartupEntries.Clear();
+        foreach (var entry in _startup.ReadEntries()) StartupEntries.Add(entry);
+    }
+
+    private void DisableSelectedStartup()
+    {
+        if (SelectedStartup is null)
+        {
+            LastOperation = "Önce kullanıcı kapsamındaki bir başlangıç girdisi seçin.";
+            return;
+        }
+        Run(() => _startupManagement.Disable(SelectedStartup));
+        RefreshStartup();
+    }
+
+    private void RunStartup(Func<string> operation)
+    {
+        Run(operation);
+        RefreshStartup();
     }
 
     private void LoadRecentOperations()
