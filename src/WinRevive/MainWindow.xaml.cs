@@ -16,7 +16,7 @@ public partial class MainWindow : Window
         var capabilities = new CapabilityService();
         var snapshots = new SnapshotService();
         var startup = new StartupService();
-        var search = new SearchService();
+        var search = new SearchService(new ElevatedHostClient());
         var applications = new ApplicationInventoryService();
         var minimal = new MinimalProfileService(
             new RegistryService(),

@@ -40,6 +40,7 @@ Temel ilkeler:
 - Windows WMI üzerinden GPU, pil ve pagefile teşhisi; erişilemeyen bilgiler açıkça bilinmiyor olarak raporlanır
 - Salt-okunur kurulu uygulama envanteri ve Defender, Secure Boot, TPM, BitLocker güvenlik özeti
 - Snapshot'lı accent renk kişiselleştirmesi
+- Search onarımı için ayrı, allowlist tabanlı elevated host sözleşmesi ve UAC akışı
 - xUnit test altyapısı
 - Inno Setup başlangıç betiği
 

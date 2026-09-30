@@ -1,19 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    <AssemblyName>WinRevive.ControlCenter</AssemblyName>
-    <RootNamespace>WinRevive</RootNamespace>
-    <Platforms>x64</Platforms>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AssemblyName>WinRevive.ElevatedHost</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../WinRevive.Contracts/WinRevive.Contracts.csproj"/>
-    <PackageReference Include="System.Management" Version="8.0.0"/>
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0"/>
   </ItemGroup>
 </Project>

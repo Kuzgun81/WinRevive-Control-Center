@@ -41,6 +41,18 @@ jobs:
           -p:IncludeNativeLibrariesForSelfExtract=true
           -p:EnableCompressionInSingleFile=true
 
+      - name: Publish elevated host
+        run: >
+          dotnet publish src/WinRevive.ElevatedHost/WinRevive.ElevatedHost.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output artifacts/elevated-host
+
+      - name: Bundle elevated host
+        shell: powershell
+        run: Copy-Item "artifacts/elevated-host/*" "artifacts/publish/" -Recurse -Force
+
       - name: Install Inno Setup
         if: startsWith(github.ref, 'refs/tags/')
         shell: powershell

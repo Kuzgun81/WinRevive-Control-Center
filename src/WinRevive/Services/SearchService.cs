@@ -1,10 +1,17 @@
 using Microsoft.Win32;
-using System.ServiceProcess;
+using WinRevive.Contracts;
 
 namespace WinRevive.Services;
 
 public sealed class SearchService
 {
+    private readonly ElevatedHostClient _elevatedHost;
+
+    public SearchService(ElevatedHostClient? elevatedHost = null)
+    {
+        _elevatedHost = elevatedHost ?? new ElevatedHostClient();
+    }
+
     public string ReadStatus()
     {
         if (!OperatingSystem.IsWindows())
@@ -28,13 +35,6 @@ public sealed class SearchService
     {
         if (!OperatingSystem.IsWindows())
             throw new PlatformNotSupportedException("Windows Search onarımı yalnızca Windows'ta kullanılabilir.");
-        using var service = new ServiceController("WSearch");
-        if (service.Status != ServiceControllerStatus.Stopped &&
-            service.Status != ServiceControllerStatus.StopPending)
-            service.Stop();
-        service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(20));
-        service.Start();
-        service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(20));
-        return "Windows Search servisi yeniden başlatıldı ve doğrulandı.";
+        return _elevatedHost.Execute(ElevatedOperation.RepairWindowsSearch);
     }
 }
