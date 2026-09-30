@@ -42,7 +42,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<string> RecentOperations { get; } = [];
     public SystemInfo SystemInfo { get; private set; } = new(
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
-        "Okunuyor...", "Okunuyor...");
+        "Okunuyor...", "Okunuyor...", "Okunuyor...");
     public string StatusMessage => "Hazır";
     public string TransparencyState { get => _transparencyState; private set => Set(ref _transparencyState, value); }
     public string LastOperation { get => _lastOperation; private set => Set(ref _lastOperation, value); }
