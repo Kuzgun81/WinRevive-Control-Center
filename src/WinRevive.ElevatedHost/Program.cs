@@ -51,8 +51,13 @@ static ElevatedResponse RepairSearch()
         service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(20));
         return new(true, "Windows Search servisi elevated host üzerinden yeniden başlatıldı ve doğrulandı.");
     }
+    catch (Exception ex) when (ex is InvalidOperationException or System.TimeoutException)
+    {
+        return new(false, $"Windows Search onarılamadı: {ex.Message}");
+    }
+}
 
-    static ElevatedResponse RebuildSearch()
+static ElevatedResponse RebuildSearch()
     {
         if (!OperatingSystem.IsWindows())
             return new(false, "Windows Search yalnızca Windows'ta yeniden oluşturulabilir.");
@@ -73,11 +78,6 @@ static ElevatedResponse RepairSearch()
         {
             return new(false, $"Windows Search dizini yeniden oluşturulamadı: {ex.Message}");
         }
-    }
-    catch (Exception ex) when (ex is InvalidOperationException or System.TimeoutException)
-    {
-        return new(false, $"Windows Search onarılamadı: {ex.Message}");
-    }
 }
 
 static async Task<int> Respond(StreamWriter writer, bool success, string message)
