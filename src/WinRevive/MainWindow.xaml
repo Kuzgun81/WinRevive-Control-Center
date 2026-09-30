@@ -92,6 +92,7 @@
           <StackPanel>
             <TextBlock Text="İşlem geçmişi" FontSize="16" FontWeight="SemiBold"/>
             <TextBlock Text="{Binding LastOperation}" Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+            <ListBox ItemsSource="{Binding RecentOperations}" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource PrimaryText}" Margin="0,10,0,0" MaxHeight="180"/>
           </StackPanel>
         </Border>
       </StackPanel>

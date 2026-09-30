@@ -22,5 +22,17 @@ public sealed class OperationHistoryService
         return string.IsNullOrWhiteSpace(line) ? null : JsonSerializer.Deserialize<HistoryItem>(line);
     }
 
+    public IReadOnlyList<HistoryItem> ReadRecent(int limit = 10)
+    {
+        if (!File.Exists(_path)) return [];
+        return File.ReadLines(_path)
+            .Reverse()
+            .Take(limit)
+            .Select(line => JsonSerializer.Deserialize<HistoryItem>(line))
+            .Where(item => item is not null)
+            .Cast<HistoryItem>()
+            .ToArray();
+    }
+
     public sealed record HistoryItem(DateTimeOffset Timestamp, string Operation, string Status, string Detail);
 }

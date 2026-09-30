@@ -35,6 +35,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<ThemeOption> Themes { get; }
+    public ObservableCollection<string> RecentOperations { get; } = [];
     public SystemInfo SystemInfo { get; private set; } = new(
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
         "Okunuyor...", "Okunuyor...");
@@ -55,6 +56,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             LastOperation = _history.ReadLatest() is { } latest
                 ? $"{latest.Operation}: {latest.Status} ({latest.Detail})"
                 : "Sistem bilgileri yenilendi.";
+            LoadRecentOperations();
             OnPropertyChanged(nameof(SystemInfo));
         }
         catch (Exception ex)
@@ -66,8 +68,20 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     private void Run(Func<string> operation)
     {
-        try { LastOperation = operation(); TransparencyState = _rule.Detect(); }
+        try
+        {
+            LastOperation = operation();
+            TransparencyState = _rule.Detect();
+            LoadRecentOperations();
+        }
         catch (Exception ex) { _logger.Error("Optimization operation failed.", ex); LastOperation = "İşlem başarısız: " + ex.Message; }
+    }
+
+    private void LoadRecentOperations()
+    {
+        RecentOperations.Clear();
+        foreach (var item in _history.ReadRecent())
+            RecentOperations.Add($"{item.Timestamp.LocalDateTime:g} • {item.Operation} • {item.Status} • {item.Detail}");
     }
 
     private bool Set<T>(ref T field, T value, [CallerMemberName] string? name = null)
