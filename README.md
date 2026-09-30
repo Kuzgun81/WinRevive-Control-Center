@@ -37,6 +37,7 @@ Temel ilkeler:
 - Linux-benzeri minimal profil: koyu mod, azaltılmış şeffaflık ve sol görev çubuğu hizası
 - Minimal profil için JSON snapshot ve geri alma
 - Ortak adlandırılmış snapshot altyapısı; kural yedekleri `LocalAppData\WinRevive\snapshots` altında tutulur
+- Windows WMI üzerinden GPU, pil ve pagefile teşhisi; erişilemeyen bilgiler açıkça bilinmiyor olarak raporlanır
 - xUnit test altyapısı
 - Inno Setup başlangıç betiği
 

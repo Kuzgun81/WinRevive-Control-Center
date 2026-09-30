@@ -54,6 +54,9 @@
                 <TextBlock Text="Salt-okunur Windows analizi" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="{Binding SystemInfo.StartupSummary}" Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
                 <TextBlock Text="{Binding SystemInfo.SearchSummary}" Foreground="{DynamicResource MutedText}" Margin="0,4,0,0"/>
+                <TextBlock Text="{Binding SystemInfo.Graphics}" Foreground="{DynamicResource MutedText}" Margin="0,4,0,0"/>
+                <TextBlock Text="{Binding SystemInfo.Battery}" Foreground="{DynamicResource MutedText}" Margin="0,4,0,0"/>
+                <TextBlock Text="{Binding SystemInfo.Pagefile}" Foreground="{DynamicResource MutedText}" Margin="0,4,0,0"/>
               </StackPanel>
             </Border>
             <Button Content="Sistemi yeniden tara" Command="{Binding RefreshCommand}" HorizontalAlignment="Left" Margin="0,16,0,0"/>

@@ -13,7 +13,7 @@ public partial class MainWindow : Window
         var capabilities = new CapabilityService();
         var snapshots = new SnapshotService();
         var viewModel = new MainViewModel(
-            new SystemInfoService(capabilities, new StartupService(), new SearchService()),
+            new SystemInfoService(capabilities, new StartupService(), new SearchService(), new WindowsDiagnosticsService()),
             new SettingsService(),
             new FileLogger(),
             new TransparencyOptimizationRule(

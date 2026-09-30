@@ -9,4 +9,7 @@ public sealed record SystemInfo(
     string LogicalProcessors,
     string Capabilities,
     string StartupSummary,
-    string SearchSummary);
+    string SearchSummary,
+    string Graphics,
+    string Battery,
+    string Pagefile);

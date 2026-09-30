@@ -8,12 +8,14 @@ public sealed class SystemInfoService
     private readonly CapabilityService _capabilities;
     private readonly StartupService _startup;
     private readonly SearchService _search;
+    private readonly WindowsDiagnosticsService _windowsDiagnostics;
 
-    public SystemInfoService(CapabilityService capabilities, StartupService startup, SearchService search)
+    public SystemInfoService(CapabilityService capabilities, StartupService startup, SearchService search, WindowsDiagnosticsService windowsDiagnostics)
     {
         _capabilities = capabilities;
         _startup = startup;
         _search = search;
+        _windowsDiagnostics = windowsDiagnostics;
     }
 
     public SystemInfo Read()
@@ -34,6 +36,9 @@ public sealed class SystemInfoService
             Environment.ProcessorCount.ToString(),
             _capabilities.ReadSummary(),
             $"{_startup.ReadEntries().Count} kayıt bulundu",
-            _search.ReadStatus());
+            _search.ReadStatus(),
+            _windowsDiagnostics.ReadGraphics(),
+            _windowsDiagnostics.ReadBattery(),
+            _windowsDiagnostics.ReadPagefile());
     }
 }
