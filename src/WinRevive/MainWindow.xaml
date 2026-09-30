@@ -1,0 +1,80 @@
+<Window x:Class="WinRevive.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WinRevive Control Center"
+        Width="1100" Height="720" MinWidth="900" MinHeight="600"
+        Background="{DynamicResource WindowBackground}"
+        WindowStartupLocation="CenterScreen">
+  <Grid Margin="28">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <DockPanel Grid.Row="0" Margin="0,0,0,24">
+      <StackPanel>
+        <TextBlock Text="WinRevive Control Center" FontSize="28" FontWeight="SemiBold"/>
+        <TextBlock Text="Güvenli ve geri alınabilir Windows yönetimi" Foreground="{DynamicResource MutedText}" Margin="0,5,0,0"/>
+      </StackPanel>
+      <TextBlock DockPanel.Dock="Right" Text="{Binding StatusMessage}" Foreground="{DynamicResource MutedText}" VerticalAlignment="Center"/>
+    </DockPanel>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="2*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <StackPanel Grid.Column="0" Margin="0,0,18,0">
+        <TextBlock Text="Sistem özeti" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,12"/>
+        <UniformGrid Columns="2">
+          <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,0,10,10">
+            <StackPanel><TextBlock Text="Windows" Foreground="{DynamicResource MutedText}"/><TextBlock Text="{Binding SystemInfo.WindowsVersion}" FontSize="18" Margin="0,7,0,0"/></StackPanel>
+          </Border>
+          <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,0,0,10">
+            <StackPanel><TextBlock Text="İşlemci" Foreground="{DynamicResource MutedText}"/><TextBlock Text="{Binding SystemInfo.Processor}" FontSize="18" TextWrapping="Wrap" Margin="0,7,0,0"/></StackPanel>
+          </Border>
+          <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,0,10,0">
+            <StackPanel><TextBlock Text="Bellek" Foreground="{DynamicResource MutedText}"/><TextBlock Text="{Binding SystemInfo.Memory}" FontSize="18" Margin="0,7,0,0"/></StackPanel>
+          </Border>
+          <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18">
+            <StackPanel><TextBlock Text="Sistem diski" Foreground="{DynamicResource MutedText}"/><TextBlock Text="{Binding SystemInfo.Disk}" FontSize="18" Margin="0,7,0,0"/></StackPanel>
+          </Border>
+        </UniformGrid>
+        <TextBlock Text="Güvenli kural" FontSize="19" FontWeight="SemiBold" Margin="0,28,0,12"/>
+        <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18">
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+            <StackPanel>
+              <TextBlock Text="Şeffaflık efektini azalt" FontSize="16" FontWeight="SemiBold"/>
+              <TextBlock Text="Mevcut değeri yedekler, uygular ve gerçek Registry değerini doğrular." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,12,0"/>
+              <TextBlock Text="{Binding TransparencyState}" Foreground="{DynamicResource AccentBrush}" Margin="0,10,0,0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+              <Button Content="Uygula" Command="{Binding ApplyTransparencyCommand}"/>
+              <Button Content="Geri al" Command="{Binding RevertTransparencyCommand}" Background="#CBD5E1"/>
+            </StackPanel>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <StackPanel Grid.Column="1">
+        <TextBlock Text="Kontrol paneli" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,12"/>
+        <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18">
+          <StackPanel>
+            <TextBlock Text="Görünüm" FontSize="16" FontWeight="SemiBold"/>
+            <TextBlock Text="Arayüz temasını seçin. Tercih yerel ayarlarda saklanır." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,14"/>
+            <ComboBox SelectedValue="{Binding Theme}" ItemsSource="{Binding Themes}" DisplayMemberPath="Name" SelectedValuePath="Value" Padding="8"/>
+            <Button Content="Sistemi yeniden tara" Command="{Binding RefreshCommand}" Margin="0,18,0,0"/>
+          </StackPanel>
+        </Border>
+        <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,18,0,0">
+          <StackPanel>
+            <TextBlock Text="İşlem geçmişi" FontSize="16" FontWeight="SemiBold"/>
+            <TextBlock Text="{Binding LastOperation}" Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+    <TextBlock Grid.Row="2" Text="MVP • Değişiklikler açıklanır, doğrulanır ve geri alınabilir." Foreground="{DynamicResource MutedText}" Margin="0,22,0,0"/>
+  </Grid>
+</Window>

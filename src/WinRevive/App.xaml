@@ -1,0 +1,22 @@
+<Application x:Class="WinRevive.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+  <Application.Resources>
+    <SolidColorBrush x:Key="WindowBackground" Color="#0F172A"/>
+    <SolidColorBrush x:Key="CardBackground" Color="#1E293B"/>
+    <SolidColorBrush x:Key="PrimaryText" Color="#F8FAFC"/>
+    <SolidColorBrush x:Key="MutedText" Color="#94A3B8"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#38BDF8"/>
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+    </Style>
+    <Style TargetType="Button">
+      <Setter Property="Foreground" Value="#0F172A"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="Margin" Value="0,0,8,0"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+  </Application.Resources>
+</Application>
