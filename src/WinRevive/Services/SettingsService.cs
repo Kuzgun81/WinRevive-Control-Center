@@ -10,22 +10,41 @@ public sealed class SettingsService
 
     public string Theme
     {
-        get
+        get => Read().Theme;
+        set => Write(Read() with { Theme = value });
+    }
+
+    public bool FirstRunCompleted
+    {
+        get => Read().FirstRunCompleted;
+        set => Write(Read() with { FirstRunCompleted = value });
+    }
+
+    public string PreferredProfile
+    {
+        get => Read().PreferredProfile;
+        set => Write(Read() with { PreferredProfile = value });
+    }
+
+    private Settings Read()
+    {
+        try
         {
-            try
-            {
-                if (File.Exists(_path))
-                    return JsonSerializer.Deserialize<Settings>(File.ReadAllText(_path))?.Theme ?? "dark";
-            }
-            catch { }
-            return "dark";
+            return File.Exists(_path)
+                ? JsonSerializer.Deserialize<Settings>(File.ReadAllText(_path)) ?? new Settings("dark", false, "general")
+                : new Settings("dark", false, "general");
         }
-        set
+        catch (JsonException)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
-            File.WriteAllText(_path, JsonSerializer.Serialize(new Settings(value), new JsonSerializerOptions { WriteIndented = true }));
+            return new Settings("dark", false, "general");
         }
     }
 
-    private sealed record Settings(string Theme);
+    private void Write(Settings settings)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
+        File.WriteAllText(_path, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
+    }
+
+    private sealed record Settings(string Theme, bool FirstRunCompleted, string PreferredProfile);
 }

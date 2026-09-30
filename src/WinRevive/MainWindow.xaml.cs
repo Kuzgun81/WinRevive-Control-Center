@@ -9,27 +9,32 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
+        var settings = new SettingsService();
+        if (!settings.FirstRunCompleted)
+            new FirstRunWindow(settings).ShowDialog();
         InitializeComponent();
         var capabilities = new CapabilityService();
         var snapshots = new SnapshotService();
         var startup = new StartupService();
         var search = new SearchService();
+        var minimal = new MinimalProfileService(
+            new RegistryService(),
+            new FileLogger(),
+            new OperationHistoryService());
         var viewModel = new MainViewModel(
             new SystemInfoService(capabilities, startup, search, new WindowsDiagnosticsService()),
-            new SettingsService(),
+            settings,
             new FileLogger(),
             new TransparencyOptimizationRule(
                 new RegistryService(),
                 new FileLogger(),
                 new OperationHistoryService(),
                 snapshots),
-            new MinimalProfileService(
-                new RegistryService(),
-                new FileLogger(),
-                new OperationHistoryService()),
+            minimal,
             startup,
             new StartupManagementService(startup, snapshots, new OperationHistoryService()),
-            search);
+            search,
+            new OptimizationProfileService(minimal, new PowerProfileService(), new OperationHistoryService()));
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;
