@@ -259,6 +259,31 @@
         </StackPanel>
       </TabItem>
 
+      <TabItem Header="Geri Alma Merkezi">
+        <StackPanel Margin="0,18,12,0">
+          <TextBlock Text="Snapshot ve geri alma merkezi" FontSize="19" FontWeight="SemiBold"/>
+          <TextBlock Text="Snapshot dosyaları burada listelenir. Silme işlemi yalnızca yedek dosyasını kaldırır; sistem ayarını değiştirmez."
+                     Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,14"/>
+          <DockPanel Margin="0,0,0,10">
+            <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshSnapshotsCommand}"/>
+            <Button DockPanel.Dock="Right" Content="Seçileni sil" Command="{Binding DeleteSelectedSnapshotCommand}" Margin="0,0,8,0" Background="#CBD5E1"/>
+          </DockPanel>
+          <ListBox ItemsSource="{Binding Snapshots}" SelectedItem="{Binding SelectedSnapshot}" MaxHeight="360">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="4">
+                  <TextBlock Text="{Binding Id}" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding Scope}" Foreground="{DynamicResource MutedText}"/>
+                  <TextBlock Text="{Binding CreatedAt}" Foreground="{DynamicResource MutedText}"/>
+                  <TextBlock Text="{Binding SizeBytes}" Foreground="{DynamicResource MutedText}"/>
+                  <TextBlock Text="{Binding Error}" Foreground="#B91C1C" TextWrapping="Wrap"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </TabItem>
+
       <TabItem Header="Ayarlar">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Arayüz ayarları" FontSize="19" FontWeight="SemiBold"/>

@@ -44,7 +44,8 @@ public partial class MainWindow : Window
             search,
             new OptimizationProfileService(minimal, new PowerProfileService(), new OperationHistoryService()),
             new PersonalizationService(snapshots, new OperationHistoryService()),
-            applications);
+            applications,
+            snapshots);
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;

@@ -21,12 +21,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly PersonalizationService _personalization;
     private readonly ApplicationInventoryService _applications;
     private readonly OperationHistoryService _history;
+    private readonly SnapshotService _snapshots;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
     private string _wallpaperPath = string.Empty;
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
@@ -39,6 +40,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _profiles = profiles;
         _personalization = personalization;
         _applications = applications;
+        _snapshots = snapshots;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -61,9 +63,12 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ApplyWallpaperCommand = new ActionCommand(() => Run(() => _personalization.ApplyWallpaper(WallpaperPath)));
         RevertWallpaperCommand = new ActionCommand(() => Run(() => _personalization.RevertWallpaper()));
         RefreshApplicationsCommand = new ActionCommand(RefreshApplications);
+        RefreshSnapshotsCommand = new ActionCommand(RefreshSnapshots);
+        DeleteSelectedSnapshotCommand = new ActionCommand(DeleteSelectedSnapshot);
         Refresh();
         RefreshStartup();
         RefreshApplications();
+        RefreshSnapshots();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -71,6 +76,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<string> RecentOperations { get; } = [];
     public ObservableCollection<StartupEntry> StartupEntries { get; } = [];
     public ObservableCollection<InstalledApplication> InstalledApplications { get; } = [];
+    public ObservableCollection<SnapshotService.SnapshotEntry> Snapshots { get; } = [];
+    public SnapshotService.SnapshotEntry? SelectedSnapshot { get; set; }
     public StartupEntry? SelectedStartup { get; set; }
     public SystemInfo SystemInfo { get; private set; } = new(
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
@@ -101,6 +108,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ApplyWallpaperCommand { get; }
     public ICommand RevertWallpaperCommand { get; }
     public ICommand RefreshApplicationsCommand { get; }
+    public ICommand RefreshSnapshotsCommand { get; }
+    public ICommand DeleteSelectedSnapshotCommand { get; }
 
     private void Refresh()
     {
@@ -113,6 +122,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 ? $"{latest.Operation}: {latest.Status} ({latest.Detail})"
                 : "Sistem bilgileri yenilendi.";
             LoadRecentOperations();
+            RefreshSnapshots();
             OnPropertyChanged(nameof(SystemInfo));
         }
         catch (Exception ex)
@@ -130,6 +140,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             TransparencyState = _rule.Detect();
             OnPropertyChanged(nameof(MinimalProfileState));
             LoadRecentOperations();
+            RefreshSnapshots();
         }
         catch (Exception ex) { _logger.Error("Optimization operation failed.", ex); LastOperation = "İşlem başarısız: " + ex.Message; }
     }
@@ -145,6 +156,36 @@ public sealed class MainViewModel : INotifyPropertyChanged
         InstalledApplications.Clear();
         foreach (var application in _applications.Read())
             InstalledApplications.Add(application);
+    }
+
+    private void RefreshSnapshots()
+    {
+        Snapshots.Clear();
+        foreach (var snapshot in _snapshots.List())
+            Snapshots.Add(snapshot);
+    }
+
+    private void DeleteSelectedSnapshot()
+    {
+        if (SelectedSnapshot is null)
+        {
+            LastOperation = "Önce silinecek bir snapshot seçin.";
+            return;
+        }
+
+        try
+        {
+            if (!_snapshots.Delete(SelectedSnapshot.Id))
+                throw new InvalidOperationException("Snapshot bulunamadı veya silinemedi.");
+            _history.Record("Snapshots", "Deleted", SelectedSnapshot.Id);
+            LastOperation = $"Snapshot silindi: {SelectedSnapshot.Id}";
+            RefreshSnapshots();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Snapshot deletion failed.", ex);
+            LastOperation = "Snapshot silinemedi: " + ex.Message;
+        }
     }
 
     private void DisableSelectedStartup()
