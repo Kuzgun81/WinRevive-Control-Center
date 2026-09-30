@@ -37,4 +37,27 @@ public sealed class SearchService
             throw new PlatformNotSupportedException("Windows Search onarımı yalnızca Windows'ta kullanılabilir.");
         return _elevatedHost.Execute(ElevatedOperation.RepairWindowsSearch);
     }
+
+    public string Rebuild()
+    {
+        if (!OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException("Windows Search yeniden oluşturma yalnızca Windows'ta kullanılabilir.");
+        return _elevatedHost.Execute(ElevatedOperation.RebuildWindowsSearch);
+    }
+
+    public string ReadIndexStatus()
+    {
+        if (!OperatingSystem.IsWindows())
+            return "Dizin durumu: Windows dışı ortam";
+
+        using var key = Registry.LocalMachine.OpenSubKey(
+            @"SOFTWARE\Microsoft\Windows Search\Gather\Windows\SystemIndex", false);
+        if (key is null)
+            return "Dizin durumu: yapılandırma bulunamadı";
+
+        var completed = key.GetValue("SetupCompletedSuccessfully");
+        return completed is 1 or true
+            ? "Dizin durumu: hazır"
+            : "Dizin durumu: hazırlanıyor veya yeniden oluşturuluyor";
+    }
 }

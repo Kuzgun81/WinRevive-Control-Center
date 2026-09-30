@@ -331,8 +331,11 @@
               <StackPanel>
                 <TextBlock Text="Windows Search" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="{Binding SystemInfo.SearchSummary}" Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
-                <TextBlock Text="Onarım servisi durdurup yeniden başlatır; yönetici yetkisi gerekebilir." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
-                <Button Content="Search servisini onar / yeniden başlat" Command="{Binding RepairSearchCommand}" HorizontalAlignment="Left" Margin="0,12,0,0"/>
+                <TextBlock Text="Servis onarımı ve dizin yeniden oluşturma işlemleri yönetici yetkisi isteyebilir." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                  <Button Content="Servisi onar / yeniden başlat" Command="{Binding RepairSearchCommand}"/>
+                  <Button Content="Dizini yeniden oluştur" Command="{Binding RebuildSearchCommand}" Margin="8,0,0,0"/>
+                </StackPanel>
               </StackPanel>
             </Border>
           </StackPanel>

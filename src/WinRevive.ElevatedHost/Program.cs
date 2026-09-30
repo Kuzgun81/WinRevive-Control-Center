@@ -1,4 +1,5 @@
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text.Json;
 using WinRevive.Contracts;
@@ -24,6 +25,7 @@ try
     var response = request.Operation switch
     {
         ElevatedOperation.RepairWindowsSearch => RepairSearch(),
+        ElevatedOperation.RebuildWindowsSearch => RebuildSearch(),
         _ => new ElevatedResponse(false, "İzin verilmeyen elevated işlem.")
     };
     return await Respond(writer, response.Success, response.Message);
@@ -48,6 +50,29 @@ static ElevatedResponse RepairSearch()
         service.Start();
         service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(20));
         return new(true, "Windows Search servisi elevated host üzerinden yeniden başlatıldı ve doğrulandı.");
+    }
+
+    static ElevatedResponse RebuildSearch()
+    {
+        if (!OperatingSystem.IsWindows())
+            return new(false, "Windows Search yalnızca Windows'ta yeniden oluşturulabilir.");
+
+        try
+        {
+            var managerType = Type.GetTypeFromProgID("Search.Manager");
+            if (managerType is null)
+                return new(false, "Windows Search yönetim bileşeni bulunamadı.");
+
+            dynamic manager = Activator.CreateInstance(managerType)
+                ?? throw new InvalidOperationException("Windows Search yönetim bileşeni başlatılamadı.");
+            dynamic catalog = manager.GetCatalog("SystemIndex");
+            catalog.Reindex();
+            return new(true, "Windows Search dizini yeniden oluşturma isteği başlatıldı.");
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            return new(false, $"Windows Search dizini yeniden oluşturulamadı: {ex.Message}");
+        }
     }
     catch (Exception ex) when (ex is InvalidOperationException or System.TimeoutException)
     {

@@ -2,7 +2,8 @@ namespace WinRevive.Contracts;
 
 public enum ElevatedOperation
 {
-    RepairWindowsSearch
+    RepairWindowsSearch,
+    RebuildWindowsSearch
 }
 
 public sealed record ElevatedRequest(

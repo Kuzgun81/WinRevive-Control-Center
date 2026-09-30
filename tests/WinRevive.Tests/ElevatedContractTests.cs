@@ -13,4 +13,12 @@ public sealed class ElevatedContractTests
         Assert.Equal(1, request.ProtocolVersion);
         Assert.Equal(ElevatedOperation.RepairWindowsSearch, request.Operation);
     }
+
+    [Fact]
+    public void SearchRebuildIsAnExplicitAllowlistedOperation()
+    {
+        var request = new ElevatedRequest(1, "nonce", ElevatedOperation.RebuildWindowsSearch);
+
+        Assert.Equal(ElevatedOperation.RebuildWindowsSearch, request.Operation);
+    }
 }

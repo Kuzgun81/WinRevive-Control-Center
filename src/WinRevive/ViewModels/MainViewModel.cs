@@ -63,6 +63,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         DisableSelectedStartupCommand = new ActionCommand(DisableSelectedStartup);
         RevertStartupCommand = new ActionCommand(() => RunStartup(_startupManagement.RevertLatest));
         RepairSearchCommand = new ActionCommand(() => Run(() => _search.Repair()));
+        RebuildSearchCommand = new ActionCommand(() => Run(() => _search.Rebuild()));
         ApplyGeneralProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("general")));
         ApplyGamingProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("gaming")));
         ApplyBatteryProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("battery")));
@@ -128,6 +129,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand DisableSelectedStartupCommand { get; }
     public ICommand RevertStartupCommand { get; }
     public ICommand RepairSearchCommand { get; }
+    public ICommand RebuildSearchCommand { get; }
     public ICommand ApplyGeneralProfileCommand { get; }
     public ICommand ApplyGamingProfileCommand { get; }
     public ICommand ApplyBatteryProfileCommand { get; }
