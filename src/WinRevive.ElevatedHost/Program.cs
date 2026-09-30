@@ -11,7 +11,7 @@ var expectedNonce = args[2];
 using var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
 try
 {
-    await pipe.ConnectAsync(TimeSpan.FromSeconds(20));
+    await pipe.ConnectAsync(20_000);
     using var reader = new StreamReader(pipe);
     using var writer = new StreamWriter(pipe) { AutoFlush = true };
     var request = JsonSerializer.Deserialize<ElevatedRequest>(await reader.ReadLineAsync() ?? string.Empty);
@@ -28,7 +28,7 @@ try
     };
     return await Respond(writer, response.Success, response.Message);
 }
-catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or TimeoutException)
+catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.TimeoutException)
 {
     return 3;
 }
@@ -49,7 +49,7 @@ static ElevatedResponse RepairSearch()
         service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(20));
         return new(true, "Windows Search servisi elevated host üzerinden yeniden başlatıldı ve doğrulandı.");
     }
-    catch (Exception ex) when (ex is InvalidOperationException or TimeoutException)
+    catch (Exception ex) when (ex is InvalidOperationException or System.TimeoutException)
     {
         return new(false, $"Windows Search onarılamadı: {ex.Message}");
     }
