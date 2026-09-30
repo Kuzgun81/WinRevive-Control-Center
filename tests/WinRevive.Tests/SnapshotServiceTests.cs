@@ -21,9 +21,14 @@ public sealed class SnapshotServiceTests
             Assert.Equal("before", snapshot.State.Value);
             Assert.Equal(7, snapshot.State.Number);
         }
+        finally
+        {
+            if (Directory.Exists(root)) Directory.Delete(root, true);
+        }
+    }
 
-        [Fact]
-        public void ListAndDelete_ManagesSnapshotFiles()
+    [Fact]
+    public void ListAndDelete_ManagesSnapshotFiles()
         {
             var root = Path.Combine(Path.GetTempPath(), "WinReviveTests", Guid.NewGuid().ToString("N"));
             try
@@ -43,8 +48,8 @@ public sealed class SnapshotServiceTests
             }
         }
 
-        [Fact]
-        public void List_MarksCorruptSnapshotWithoutHidingIt()
+    [Fact]
+    public void List_MarksCorruptSnapshotWithoutHidingIt()
         {
             var root = Path.Combine(Path.GetTempPath(), "WinReviveTests", Guid.NewGuid().ToString("N"));
             try
@@ -64,11 +69,6 @@ public sealed class SnapshotServiceTests
                 if (Directory.Exists(root)) Directory.Delete(root, true);
             }
         }
-        finally
-        {
-            if (Directory.Exists(root)) Directory.Delete(root, true);
-        }
-    }
 
     private sealed record TestState(string Value, int Number);
 }
