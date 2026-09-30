@@ -13,6 +13,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly SettingsService _settings;
     private readonly FileLogger _logger;
     private readonly TransparencyOptimizationRule _rule;
+    private readonly OperationHistoryService _history;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
@@ -23,6 +24,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _settings = settings;
         _logger = logger;
         _rule = rule;
+        _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık (yakında)", "light"), new ThemeOption("Sistem (yakında)", "system") });
         RefreshCommand = new ActionCommand(Refresh);
@@ -48,7 +50,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
         {
             SystemInfo = _systemInfoService.Read();
             TransparencyState = _rule.Detect();
-            LastOperation = "Sistem bilgileri yenilendi.";
+            LastOperation = _history.ReadLatest() is { } latest
+                ? $"{latest.Operation}: {latest.Status} ({latest.Detail})"
+                : "Sistem bilgileri yenilendi.";
             OnPropertyChanged(nameof(SystemInfo));
         }
         catch (Exception ex)

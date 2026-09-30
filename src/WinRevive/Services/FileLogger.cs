@@ -20,9 +20,9 @@ public sealed class FileLogger
             var entry = JsonSerializer.Serialize(new { timestamp = DateTimeOffset.UtcNow, level, message, exception });
             lock (_gate) File.AppendAllText(_path, entry + Environment.NewLine);
         }
-        catch
+        catch (IOException)
         {
-            // Logging must not take down the application.
+            // Logging must not take down the application when the log path is unavailable.
         }
     }
 }

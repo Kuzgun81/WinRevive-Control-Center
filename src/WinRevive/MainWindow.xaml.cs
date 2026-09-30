@@ -13,6 +13,9 @@ public partial class MainWindow : Window
             new SystemInfoService(),
             new SettingsService(),
             new FileLogger(),
-            new TransparencyOptimizationRule(new RegistryService(), new FileLogger()));
+            new TransparencyOptimizationRule(
+                new RegistryService(),
+                new FileLogger(),
+                new OperationHistoryService()));
     }
 }
