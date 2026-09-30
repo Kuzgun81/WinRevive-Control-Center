@@ -51,6 +51,23 @@
             </Border>
             <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,14,0,0">
               <StackPanel>
+                <TextBlock Text="Dosya Gezgini" FontSize="16" FontWeight="SemiBold"/>
+                <TextBlock Text="Bu ayarlar yalnız kullanıcı profilindeki Explorer tercihlerini değiştirir ve her uygulamadan önce snapshot alır."
+                           Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,10"/>
+                <WrapPanel>
+                  <Button Content="Uzantıları göster" Command="{Binding ShowFileExtensionsCommand}"/>
+                  <Button Content="Uzantıları gizle" Command="{Binding HideFileExtensionsCommand}"/>
+                  <Button Content="Gizli dosyaları göster" Command="{Binding ShowHiddenFilesCommand}"/>
+                  <Button Content="Gizli dosyaları gizle" Command="{Binding HideHiddenFilesCommand}"/>
+                  <Button Content="Kompakt görünüm" Command="{Binding EnableCompactViewCommand}"/>
+                  <Button Content="Normal görünüm" Command="{Binding DisableCompactViewCommand}"/>
+                  <Button Content="Bu Bilgisayar ile aç" Command="{Binding OpenThisPcCommand}"/>
+                  <Button Content="Ana Sayfa ile aç" Command="{Binding OpenHomeCommand}"/>
+                </WrapPanel>
+              </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,14,0,0">
+              <StackPanel>
                 <TextBlock Text="Salt-okunur Windows analizi" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="{Binding SystemInfo.StartupSummary}" Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
                 <TextBlock Text="{Binding SystemInfo.SearchSummary}" Foreground="{DynamicResource MutedText}" Margin="0,4,0,0"/>

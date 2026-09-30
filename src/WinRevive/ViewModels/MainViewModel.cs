@@ -22,12 +22,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly ApplicationInventoryService _applications;
     private readonly OperationHistoryService _history;
     private readonly SnapshotService _snapshots;
+    private readonly ExplorerPersonalizationService _explorer;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
     private string _wallpaperPath = string.Empty;
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots, ExplorerPersonalizationService explorer)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
@@ -41,6 +42,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _personalization = personalization;
         _applications = applications;
         _snapshots = snapshots;
+        _explorer = explorer;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -65,6 +67,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
         RefreshApplicationsCommand = new ActionCommand(RefreshApplications);
         RefreshSnapshotsCommand = new ActionCommand(RefreshSnapshots);
         DeleteSelectedSnapshotCommand = new ActionCommand(DeleteSelectedSnapshot);
+        ShowFileExtensionsCommand = new ActionCommand(() => Run(() => _explorer.ApplyFileExtensions(true)));
+        HideFileExtensionsCommand = new ActionCommand(() => Run(() => _explorer.ApplyFileExtensions(false)));
+        ShowHiddenFilesCommand = new ActionCommand(() => Run(() => _explorer.ApplyHiddenFiles(true)));
+        HideHiddenFilesCommand = new ActionCommand(() => Run(() => _explorer.ApplyHiddenFiles(false)));
+        EnableCompactViewCommand = new ActionCommand(() => Run(() => _explorer.ApplyCompactView(true)));
+        DisableCompactViewCommand = new ActionCommand(() => Run(() => _explorer.ApplyCompactView(false)));
+        OpenThisPcCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(true)));
+        OpenHomeCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(false)));
         Refresh();
         RefreshStartup();
         RefreshApplications();
@@ -110,6 +120,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand RefreshApplicationsCommand { get; }
     public ICommand RefreshSnapshotsCommand { get; }
     public ICommand DeleteSelectedSnapshotCommand { get; }
+    public ICommand ShowFileExtensionsCommand { get; }
+    public ICommand HideFileExtensionsCommand { get; }
+    public ICommand ShowHiddenFilesCommand { get; }
+    public ICommand HideHiddenFilesCommand { get; }
+    public ICommand EnableCompactViewCommand { get; }
+    public ICommand DisableCompactViewCommand { get; }
+    public ICommand OpenThisPcCommand { get; }
+    public ICommand OpenHomeCommand { get; }
 
     private void Refresh()
     {

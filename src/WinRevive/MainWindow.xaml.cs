@@ -45,7 +45,8 @@ public partial class MainWindow : Window
             new OptimizationProfileService(minimal, new PowerProfileService(), new OperationHistoryService()),
             new PersonalizationService(snapshots, new OperationHistoryService()),
             applications,
-            snapshots);
+            snapshots,
+            new ExplorerPersonalizationService(snapshots, new OperationHistoryService()));
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;
