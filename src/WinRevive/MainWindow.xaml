@@ -162,6 +162,31 @@
         </StackPanel>
       </TabItem>
 
+      <TabItem Header="Uygulamalar / Güvenlik">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="0,18,12,0">
+            <TextBlock Text="Uygulamalar ve güvenlik" FontSize="19" FontWeight="SemiBold"/>
+            <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,14,0,0">
+              <StackPanel>
+                <DockPanel>
+                  <TextBlock Text="Kurulu uygulamalar" FontSize="16" FontWeight="SemiBold"/>
+                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshApplicationsCommand}"/>
+                </DockPanel>
+                <TextBlock Text="Bu faz salt-okunur envanter sağlar. Kaldırma, güvenli uninstall helper fazından sonra açılacaktır."
+                           Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                <ListBox ItemsSource="{Binding InstalledApplications}" Margin="0,10,0,0" MaxHeight="300"/>
+              </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,14,0,0">
+              <StackPanel>
+                <TextBlock Text="Güvenlik sağlayıcıları" FontSize="16" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding SystemInfo.Security}" Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
       <TabItem Header="Sistem Analizi">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">

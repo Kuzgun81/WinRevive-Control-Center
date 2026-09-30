@@ -17,6 +17,7 @@ public partial class MainWindow : Window
         var snapshots = new SnapshotService();
         var startup = new StartupService();
         var search = new SearchService();
+        var applications = new ApplicationInventoryService();
         var minimal = new MinimalProfileService(
             new RegistryService(),
             new FileLogger(),
@@ -41,7 +42,8 @@ public partial class MainWindow : Window
             new StartupManagementService(startup, snapshots, new OperationHistoryService()),
             search,
             new OptimizationProfileService(minimal, new PowerProfileService(), new OperationHistoryService()),
-            new PersonalizationService(snapshots, new OperationHistoryService()));
+            new PersonalizationService(snapshots, new OperationHistoryService()),
+            applications);
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;

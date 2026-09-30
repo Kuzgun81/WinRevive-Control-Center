@@ -19,12 +19,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly SearchService _search;
     private readonly OptimizationProfileService _profiles;
     private readonly PersonalizationService _personalization;
+    private readonly ApplicationInventoryService _applications;
     private readonly OperationHistoryService _history;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
@@ -36,6 +37,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _search = search;
         _profiles = profiles;
         _personalization = personalization;
+        _applications = applications;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -55,14 +57,17 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ApplyBlueAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("00A4EF")));
         ApplyPurpleAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("8764B8")));
         RevertAccentCommand = new ActionCommand(() => Run(() => _personalization.RevertAccent()));
+        RefreshApplicationsCommand = new ActionCommand(RefreshApplications);
         Refresh();
         RefreshStartup();
+        RefreshApplications();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<ThemeOption> Themes { get; }
     public ObservableCollection<string> RecentOperations { get; } = [];
     public ObservableCollection<StartupEntry> StartupEntries { get; } = [];
+    public ObservableCollection<InstalledApplication> InstalledApplications { get; } = [];
     public StartupEntry? SelectedStartup { get; set; }
     public SystemInfo SystemInfo { get; private set; } = new(
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
@@ -89,6 +94,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ApplyBlueAccentCommand { get; }
     public ICommand ApplyPurpleAccentCommand { get; }
     public ICommand RevertAccentCommand { get; }
+    public ICommand RefreshApplicationsCommand { get; }
 
     private void Refresh()
     {
@@ -126,6 +132,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
     {
         StartupEntries.Clear();
         foreach (var entry in _startup.ReadEntries()) StartupEntries.Add(entry);
+    }
+
+    private void RefreshApplications()
+    {
+        InstalledApplications.Clear();
+        foreach (var application in _applications.Read())
+            InstalledApplications.Add(application);
     }
 
     private void DisableSelectedStartup()
