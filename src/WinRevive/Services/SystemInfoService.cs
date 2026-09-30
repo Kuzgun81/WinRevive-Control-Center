@@ -6,10 +6,14 @@ namespace WinRevive.Services;
 public sealed class SystemInfoService
 {
     private readonly CapabilityService _capabilities;
+    private readonly StartupService _startup;
+    private readonly SearchService _search;
 
-    public SystemInfoService(CapabilityService capabilities)
+    public SystemInfoService(CapabilityService capabilities, StartupService startup, SearchService search)
     {
         _capabilities = capabilities;
+        _startup = startup;
+        _search = search;
     }
 
     public SystemInfo Read()
@@ -28,6 +32,8 @@ public sealed class SystemInfoService
             disk,
             RuntimeInformation.OSArchitecture.ToString(),
             Environment.ProcessorCount.ToString(),
-            _capabilities.ReadSummary());
+            _capabilities.ReadSummary(),
+            $"{_startup.ReadEntries().Count} kayıt bulundu",
+            _search.ReadStatus());
     }
 }

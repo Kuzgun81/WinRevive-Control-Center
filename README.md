@@ -24,6 +24,7 @@ Temel ilkeler:
 
 - Windows, işlemci, bellek ve sistem diski bilgisi
 - Windows build, mimari, mantıksal işlemci ve capability detection
+- Başlangıç kayıtları ve Windows Search yapılandırmasının salt-okunur analizi
 - WPF/MVVM ana paneli
 - Koyu ve açık tema seçimi
 - Yerel JSON ayar ve JSONL işlem geçmişi

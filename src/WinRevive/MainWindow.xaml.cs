@@ -12,7 +12,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         var capabilities = new CapabilityService();
         var viewModel = new MainViewModel(
-            new SystemInfoService(capabilities),
+            new SystemInfoService(capabilities, new StartupService(), new SearchService()),
             new SettingsService(),
             new FileLogger(),
             new TransparencyOptimizationRule(

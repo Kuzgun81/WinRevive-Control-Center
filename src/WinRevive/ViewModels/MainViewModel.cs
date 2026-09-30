@@ -36,7 +36,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
     public ObservableCollection<ThemeOption> Themes { get; }
     public SystemInfo SystemInfo { get; private set; } = new(
-        "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...");
+        "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
+        "Okunuyor...", "Okunuyor...");
     public string StatusMessage => "Hazır";
     public string TransparencyState { get => _transparencyState; private set => Set(ref _transparencyState, value); }
     public string LastOperation { get => _lastOperation; private set => Set(ref _lastOperation, value); }

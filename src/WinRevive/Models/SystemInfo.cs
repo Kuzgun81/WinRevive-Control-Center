@@ -7,4 +7,6 @@ public sealed record SystemInfo(
     string Disk,
     string Architecture,
     string LogicalProcessors,
-    string Capabilities);
+    string Capabilities,
+    string StartupSummary,
+    string SearchSummary);
