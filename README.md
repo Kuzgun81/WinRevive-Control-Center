@@ -74,6 +74,24 @@ gelecekte ayrı ve açıklamalı bir UAC akışıyla eklenecektir.
 > Bu Linux çalışma ortamında sahte bir `.exe` üretilmez. Resmi Windows artifact'i
 > yalnızca Windows runner üzerinde derlenir ve testlerden sonra yayınlanır.
 
+### Kısa kurulum tutorial'ı
+
+1. GitHub hesabınızla private repository'nin **Releases** sayfasını açın.
+2. Kullanmak istediğiniz sürümün altındaki `WinRevive-Setup.exe` dosyasını indirin.
+3. İndirdiğiniz dosyaya sağ tıklayıp **Özellikler** bölümünü açın. Windows dosyayı engellediyse **Engellemeyi kaldır** seçeneğini işaretleyip **Uygula** düğmesine basın.
+4. `WinRevive-Setup.exe` dosyasını çalıştırın ve kurulum sihirbazında lisans/kurulum konumunu onaylayın.
+5. İsterseniz masaüstü kısayolunu seçin, ardından **Install** düğmesine basın.
+6. Kurulum tamamlandığında **Finish** düğmesine basın ve uygulamayı Başlat menüsündeki **WinRevive Control Center** kısayolundan açın.
+7. İlk açılışta sistem bilgilerini kontrol edin. Bir ayarı uygulamadan önce ilgili açıklamayı okuyun; geri alınabilir ayarlarda önce snapshot oluşturulduğunu doğrulayın.
+8. Yönetici yetkisi gerektiren Search onarımı gibi işlemlerde Windows'un UAC penceresi gösterilir. İşlemi yalnızca bilinçli olarak başlatmışsanız onaylayın.
+
+#### Güncelleme ve kaldırma
+
+- Güncellemek için yeni sürümün `WinRevive-Setup.exe` dosyasını indirip mevcut kurulumun üzerine çalıştırın.
+- Mevcut kullanıcı ayarlarını korumak için kurulum sırasında varsayılan seçenekleri kullanın.
+- Kaldırmak için **Ayarlar > Uygulamalar > Yüklü uygulamalar > WinRevive Control Center > Kaldır** yolunu veya Başlat menüsündeki kaldırma kısayolunu kullanın.
+- Kaldırmadan önce korumak istediğiniz snapshot ve log dosyalarını `%LocalAppData%\WinRevive` klasöründen güvenli bir konuma kopyalayın.
+
 ## Lisans
 
 Bu proje MIT lisansı altında değildir. `LICENSE` dosyasındaki özel lisans geçerlidir;
