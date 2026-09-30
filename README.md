@@ -23,6 +23,7 @@ Temel ilkeler:
 ## Mevcut MVP
 
 - Windows, işlemci, bellek ve sistem diski bilgisi
+- Windows build, mimari, mantıksal işlemci ve capability detection
 - WPF/MVVM ana paneli
 - Koyu ve açık tema seçimi
 - Yerel JSON ayar ve JSONL işlem geçmişi

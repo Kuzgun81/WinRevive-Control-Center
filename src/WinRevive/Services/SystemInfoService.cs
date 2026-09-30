@@ -5,16 +5,29 @@ namespace WinRevive.Services;
 
 public sealed class SystemInfoService
 {
+    private readonly CapabilityService _capabilities;
+
+    public SystemInfoService(CapabilityService capabilities)
+    {
+        _capabilities = capabilities;
+    }
+
     public SystemInfo Read()
     {
         var memoryBytes = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
-        var drive = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory)!);
+        var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
+        var drive = systemRoot is null ? null : new DriveInfo(systemRoot);
         var memory = memoryBytes > 0 ? $"{memoryBytes / 1024d / 1024d / 1024d:0.0} GB kullanılabilir" : "Bilinmiyor";
-        var disk = $"{drive.AvailableFreeSpace / 1024d / 1024d / 1024d:0.0} GB boş / {drive.TotalSize / 1024d / 1024d / 1024d:0.0} GB";
+        var disk = drive is null
+            ? "Bilinmiyor"
+            : $"{drive.AvailableFreeSpace / 1024d / 1024d / 1024d:0.0} GB boş / {drive.TotalSize / 1024d / 1024d / 1024d:0.0} GB";
         return new(
-            RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"{Environment.OSVersion.VersionString} ({RuntimeInformation.OSArchitecture})" : "Windows dışı ortam",
+            _capabilities.ReadWindowsVersion(),
             Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER") ?? Environment.ProcessorCount + " mantıksal işlemci",
             memory,
-            disk);
+            disk,
+            RuntimeInformation.OSArchitecture.ToString(),
+            Environment.ProcessorCount.ToString(),
+            _capabilities.ReadSummary());
     }
 }

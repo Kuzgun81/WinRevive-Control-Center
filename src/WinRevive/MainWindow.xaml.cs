@@ -10,8 +10,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        var capabilities = new CapabilityService();
         var viewModel = new MainViewModel(
-            new SystemInfoService(),
+            new SystemInfoService(capabilities),
             new SettingsService(),
             new FileLogger(),
             new TransparencyOptimizationRule(
