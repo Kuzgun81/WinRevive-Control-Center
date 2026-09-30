@@ -85,6 +85,45 @@
         </ScrollViewer>
       </TabItem>
 
+      <TabItem Header="Bellek ve RAM">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="0,18,12,0">
+            <TextBlock Text="Bellek baskısı ve süreçler" Style="{StaticResource SectionTitle}"/>
+            <TextBlock Text="Bu modül RAM'i yapay olarak boşaltmaz. Gerçek fiziksel bellek, commit ve süreç kullanımını gösterir; yalnızca seçilen kullanıcı sürecine güvenli kapanış ister."
+                       Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,14"/>
+            <Border Style="{StaticResource PanelCard}">
+              <StackPanel>
+                <DockPanel>
+                  <TextBlock Text="{Binding MemorySummary}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,12,8"/>
+                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshMemoryCommand}"/>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding Processes}" SelectedItem="{Binding SelectedProcess}" MaxHeight="420">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <Grid Margin="4">
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="170"/>
+                          <ColumnDefinition Width="130"/>
+                          <ColumnDefinition Width="130"/>
+                          <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Id}" Foreground="{DynamicResource MutedText}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding WorkingSetBytes}" Foreground="{DynamicResource MutedText}"/>
+                        <TextBlock Grid.Column="3" Text="{Binding ProtectionReason}" Foreground="{DynamicResource MutedText}" TextTrimming="CharacterEllipsis"/>
+                      </Grid>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+                <Button Content="Seçili kullanıcı sürecine güvenli kapanış isteği gönder"
+                        Command="{Binding StopSelectedProcessCommand}" Style="{StaticResource SecondaryButton}"
+                        HorizontalAlignment="Left" Margin="0,12,0,0"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
       <TabItem Header="Güvenli Profiller">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">

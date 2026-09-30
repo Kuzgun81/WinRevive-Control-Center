@@ -47,7 +47,9 @@ public partial class MainWindow : Window
             applications,
             snapshots,
             new ExplorerPersonalizationService(snapshots, new OperationHistoryService()),
-            new CleanupService());
+            new CleanupService(),
+            new MemoryDiagnosticsService(),
+            new ProcessDiagnosticsService());
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
         viewModel.PropertyChanged += OnViewModelPropertyChanged;

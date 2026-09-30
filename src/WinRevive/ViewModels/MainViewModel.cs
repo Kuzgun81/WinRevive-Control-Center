@@ -24,13 +24,16 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly SnapshotService _snapshots;
     private readonly ExplorerPersonalizationService _explorer;
     private readonly CleanupService _cleanup;
+    private readonly MemoryDiagnosticsService _memory;
+    private readonly ProcessDiagnosticsService _processes;
     private long _cleanupEstimatedBytes;
+    private string _memorySummary = "Bellek durumu okunuyor...";
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
     private string _wallpaperPath = string.Empty;
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots, ExplorerPersonalizationService explorer, CleanupService cleanup)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots, ExplorerPersonalizationService explorer, CleanupService cleanup, MemoryDiagnosticsService memory, ProcessDiagnosticsService processes)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
@@ -46,6 +49,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _snapshots = snapshots;
         _explorer = explorer;
         _cleanup = cleanup;
+        _memory = memory;
+        _processes = processes;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
@@ -80,11 +85,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
         OpenHomeCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(false)));
         ScanCleanupCommand = new ActionCommand(ScanCleanup);
         DeleteCleanupCommand = new ActionCommand(DeleteCleanup);
+        RefreshMemoryCommand = new ActionCommand(RefreshMemory);
+        StopSelectedProcessCommand = new ActionCommand(StopSelectedProcess);
         Refresh();
         RefreshStartup();
         RefreshApplications();
         RefreshSnapshots();
         ScanCleanup();
+        RefreshMemory();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -94,7 +102,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ObservableCollection<InstalledApplication> InstalledApplications { get; } = [];
     public ObservableCollection<SnapshotService.SnapshotEntry> Snapshots { get; } = [];
     public ObservableCollection<CleanupService.CleanupItem> CleanupItems { get; } = [];
+    public ObservableCollection<ProcessInfo> Processes { get; } = [];
     public CleanupService.CleanupItem? SelectedCleanupItem { get; set; }
+    public ProcessInfo? SelectedProcess { get; set; }
     public SnapshotService.SnapshotEntry? SelectedSnapshot { get; set; }
     public StartupEntry? SelectedStartup { get; set; }
     public SystemInfo SystemInfo { get; private set; } = new(
@@ -108,6 +118,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string Theme { get => _theme; set { if (Set(ref _theme, value)) _settings.Theme = value; } }
     public string MinimalProfileState => _minimalProfile.Detect();
     public string CleanupSummary => $"{CleanupItems.Count} dosya • {FormatBytes(_cleanupEstimatedBytes)} tahmini alan";
+    public string MemorySummary { get => _memorySummary; private set => Set(ref _memorySummary, value); }
     public ICommand RefreshCommand { get; }
     public ICommand ApplyTransparencyCommand { get; }
     public ICommand RevertTransparencyCommand { get; }
@@ -139,6 +150,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand OpenHomeCommand { get; }
     public ICommand ScanCleanupCommand { get; }
     public ICommand DeleteCleanupCommand { get; }
+    public ICommand RefreshMemoryCommand { get; }
+    public ICommand StopSelectedProcessCommand { get; }
 
     private void Refresh()
     {
@@ -222,6 +235,44 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 : $"Temizlik kısmen tamamlandı: {result.DeletedFiles} dosya; {result.Failures.Count} hata.";
             ScanCleanup();
             LoadRecentOperations();
+        }
+
+        private void RefreshMemory()
+        {
+            try
+            {
+                var memory = _memory.Read();
+                MemorySummary = $"{memory.Summary} • {memory.ProcessCount} süreç • Baskı: {memory.Pressure}";
+                Processes.Clear();
+                foreach (var process in _processes.Read()) Processes.Add(process);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Memory diagnostics failed.", ex);
+                MemorySummary = "Bellek analizi başarısız: " + ex.Message;
+            }
+        }
+
+        private void StopSelectedProcess()
+        {
+            if (SelectedProcess is null)
+            {
+                LastOperation = "Önce bir süreç seçin.";
+                return;
+            }
+
+            try
+            {
+                LastOperation = _processes.RequestSafeStop(SelectedProcess);
+                _history.Record("Process", "RequestedSafeStop", $"{SelectedProcess.Name} ({SelectedProcess.Id})");
+                RefreshMemory();
+                LoadRecentOperations();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Safe process stop failed.", ex);
+                LastOperation = "Süreç durdurulamadı: " + ex.Message;
+            }
         }
         catch (Exception ex)
         {
