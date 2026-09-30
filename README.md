@@ -5,6 +5,10 @@ Windows 11 için güvenli, geri alınabilir sistem yönetim paneli.
 > Geliştirme aşamasındadır. Windows 11 üzerinde manuel test edilmeden üretim cihazlarında
 > sistem değişikliği uygulanmamalıdır.
 
+> **Özel yazılım:** Bu repository ve GitHub Release dosyaları private kullanım içindir.
+> Tüm hakları saklıdır. Kaynak kodu veya `.exe` dosyaları başkalarıyla paylaşılamaz,
+> yeniden dağıtılamaz veya değiştirilemez.
+
 ## Hedef
 
 WinRevive; sistem analizi, güvenli optimizasyon, başlangıç ve Search yönetimi,
@@ -41,7 +45,7 @@ Temel ilkeler:
 
 1. Repository'nin **Actions** sekmesinden `Windows Release` workflow'unu çalıştırın.
 2. Workflow tamamlandığında `winrevive-publish` artifact'ini indirin.
-3. İçindeki `WinRevive.ControlCenter.exe` dosyasını Windows 11 üzerinde çalıştırın.
+3. İçindeki `WinRevive.ControlCenter.exe` dosyasını kendi Windows 11 cihazınızda çalıştırın.
 
 ### Setup.exe release'i
 
@@ -52,13 +56,18 @@ Etiketlenmiş bir sürüm oluşturulduğunda workflow:
 3. Inno Setup ile `WinRevive-Setup.exe` oluşturur.
 4. Publish klasörünü ve Setup.exe'yi GitHub Release'e ekler.
 
-Kurulum için önerilen yol: Setup.exe'yi indirip çalıştırın, hedef klasörü onaylayın,
+Kurulum için önerilen yol: private GitHub Release içinden Setup.exe'yi indirip çalıştırın, hedef klasörü onaylayın,
 kurulum tamamlandıktan sonra Başlat menüsünden WinRevive Control Center'ı açın.
 Uygulama ilk açılışta yönetici yetkisi istemez; yalnızca yetki gerektiren özellikler
 gelecekte ayrı ve açıklamalı bir UAC akışıyla eklenecektir.
 
 > Bu Linux çalışma ortamında sahte bir `.exe` üretilmez. Resmi Windows artifact'i
 > yalnızca Windows runner üzerinde derlenir ve testlerden sonra yayınlanır.
+
+## Lisans
+
+Bu proje MIT lisansı altında değildir. `LICENSE` dosyasındaki özel lisans geçerlidir;
+tüm hakları saklıdır ve kullanım yalnızca copyright sahibine aittir.
 
 ## Yol haritası
 
