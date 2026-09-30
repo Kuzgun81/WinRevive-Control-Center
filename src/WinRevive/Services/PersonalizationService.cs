@@ -23,8 +23,8 @@ public sealed class PersonalizationService
             throw new ArgumentException("Geçersiz accent rengi.", nameof(hexColor));
         var previous = ReadDword(AccentPath, "AccentColorMenu");
         var snapshotId = _snapshots.Create("personalization-accent", new AccentState(previous));
-        WriteDword(AccentPath, "AccentColorMenu", color);
-        if (ReadDword(AccentPath, "AccentColorMenu") != color)
+        WriteDword(AccentPath, "AccentColorMenu", unchecked((int)color));
+        if (ReadDword(AccentPath, "AccentColorMenu") != unchecked((int)color))
             throw new InvalidOperationException("Accent rengi doğrulanamadı.");
         _history.Record("Personalization", "Applied", $"Accent {hexColor}; snapshot {snapshotId}.");
         return $"Accent rengi uygulandı: #{hexColor}.";
@@ -69,7 +69,7 @@ public sealed class PersonalizationService
         return key?.GetValue(name)?.ToString();
     }
 
-    private static void WriteDword(string path, string name, uint value)
+    private static void WriteDword(string path, string name, int value)
     {
         using var key = Registry.CurrentUser.CreateSubKey(path);
         key.SetValue(name, value, RegistryValueKind.DWord);
