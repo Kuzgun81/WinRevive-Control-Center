@@ -9,13 +9,17 @@ public sealed class SystemInfoService
     private readonly StartupService _startup;
     private readonly SearchService _search;
     private readonly WindowsDiagnosticsService _windowsDiagnostics;
+    private readonly SecurityDiagnosticsService _security;
+    private readonly ApplicationInventoryService _applications;
 
-    public SystemInfoService(CapabilityService capabilities, StartupService startup, SearchService search, WindowsDiagnosticsService windowsDiagnostics)
+    public SystemInfoService(CapabilityService capabilities, StartupService startup, SearchService search, WindowsDiagnosticsService windowsDiagnostics, SecurityDiagnosticsService security, ApplicationInventoryService applications)
     {
         _capabilities = capabilities;
         _startup = startup;
         _search = search;
         _windowsDiagnostics = windowsDiagnostics;
+        _security = security;
+        _applications = applications;
     }
 
     public SystemInfo Read()
@@ -39,6 +43,8 @@ public sealed class SystemInfoService
             _search.ReadStatus(),
             _windowsDiagnostics.ReadGraphics(),
             _windowsDiagnostics.ReadBattery(),
-            _windowsDiagnostics.ReadPagefile());
+            _windowsDiagnostics.ReadPagefile(),
+            _security.ReadSummary(),
+            $"{_applications.Read().Count} kurulu uygulama bulundu");
     }
 }

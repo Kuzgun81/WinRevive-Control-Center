@@ -22,7 +22,13 @@ public partial class MainWindow : Window
             new FileLogger(),
             new OperationHistoryService());
         var viewModel = new MainViewModel(
-            new SystemInfoService(capabilities, startup, search, new WindowsDiagnosticsService()),
+            new SystemInfoService(
+                capabilities,
+                startup,
+                search,
+                new WindowsDiagnosticsService(),
+                new SecurityDiagnosticsService(),
+                new ApplicationInventoryService()),
             settings,
             new FileLogger(),
             new TransparencyOptimizationRule(

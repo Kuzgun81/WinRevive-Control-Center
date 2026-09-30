@@ -12,4 +12,6 @@ public sealed record SystemInfo(
     string SearchSummary,
     string Graphics,
     string Battery,
-    string Pagefile);
+    string Pagefile,
+    string Security,
+    string Applications);
