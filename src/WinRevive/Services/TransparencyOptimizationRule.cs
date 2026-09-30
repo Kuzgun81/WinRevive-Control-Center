@@ -29,7 +29,7 @@ public sealed class TransparencyOptimizationRule
         var current = _registry.ReadTransparency();
         if (current is null) throw new InvalidOperationException("Mevcut şeffaflık değeri okunamadı; değişiklik uygulanmadı.");
         Directory.CreateDirectory(Path.GetDirectoryName(_backupPath)!);
-        File.WriteAllText(_backupPath, JsonSerializer.Serialize(new Backup(current, DateTimeOffset.UtcNow)));
+        File.WriteAllText(_backupPath, JsonSerializer.Serialize(new Backup(current.Value, DateTimeOffset.UtcNow)));
         _registry.WriteTransparency(0);
         if (_registry.ReadTransparency() != 0) throw new InvalidOperationException("Değişiklik doğrulanamadı.");
         _logger.Info($"Transparency applied; previous value: {current}.");
