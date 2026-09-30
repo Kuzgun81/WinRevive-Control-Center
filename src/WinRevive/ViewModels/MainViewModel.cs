@@ -236,8 +236,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
             ScanCleanup();
             LoadRecentOperations();
         }
+        catch (Exception ex)
+        {
+            _logger.Error("Cleanup failed.", ex);
+            LastOperation = "Temizlik başarısız: " + ex.Message;
+        }
+    }
 
-        private void RefreshMemory()
+    private void RefreshMemory()
         {
             try
             {
@@ -274,13 +280,6 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 LastOperation = "Süreç durdurulamadı: " + ex.Message;
             }
         }
-        catch (Exception ex)
-        {
-            _logger.Error("Cleanup failed.", ex);
-            LastOperation = "Temizlik başarısız: " + ex.Message;
-        }
-    }
-
     private static string FormatBytes(long bytes)
     {
         string[] units = ["B", "KB", "MB", "GB"];
