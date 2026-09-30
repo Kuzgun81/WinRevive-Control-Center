@@ -24,6 +24,7 @@ Temel ilkeler:
 
 - Windows, işlemci, bellek ve sistem diski bilgisi
 - WPF/MVVM ana paneli
+- Koyu ve açık tema seçimi
 - Yerel JSON ayar ve JSONL işlem geçmişi
 - Yapılandırılmış yerel log
 - HKCU `EnableTransparency` için Detect, Backup, Apply, Verify ve Revert

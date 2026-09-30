@@ -26,7 +26,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _rule = rule;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
-        Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık (yakında)", "light"), new ThemeOption("Sistem (yakında)", "system") });
+        Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
         RefreshCommand = new ActionCommand(Refresh);
         ApplyTransparencyCommand = new ActionCommand(() => Run(() => _rule.Apply()));
         RevertTransparencyCommand = new ActionCommand(() => Run(() => _rule.Revert()));
