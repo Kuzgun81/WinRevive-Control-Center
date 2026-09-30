@@ -1,4 +1,5 @@
 using WinRevive.ViewModels;
+using Xunit;
 
 namespace WinRevive.Tests;
 
