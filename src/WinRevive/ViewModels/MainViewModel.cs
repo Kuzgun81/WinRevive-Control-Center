@@ -13,23 +13,27 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly SettingsService _settings;
     private readonly FileLogger _logger;
     private readonly TransparencyOptimizationRule _rule;
+    private readonly MinimalProfileService _minimalProfile;
     private readonly OperationHistoryService _history;
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
 
-    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule)
+    public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile)
     {
         _systemInfoService = systemInfoService;
         _settings = settings;
         _logger = logger;
         _rule = rule;
+        _minimalProfile = minimalProfile;
         _history = new OperationHistoryService();
         _theme = settings.Theme;
         Themes = new(new[] { new ThemeOption("Koyu", "dark"), new ThemeOption("Açık", "light") });
         RefreshCommand = new ActionCommand(Refresh);
         ApplyTransparencyCommand = new ActionCommand(() => Run(() => _rule.Apply()));
         RevertTransparencyCommand = new ActionCommand(() => Run(() => _rule.Revert()));
+        ApplyMinimalProfileCommand = new ActionCommand(() => Run(() => _minimalProfile.Apply()));
+        RevertMinimalProfileCommand = new ActionCommand(() => Run(() => _minimalProfile.Revert()));
         Refresh();
     }
 
@@ -46,6 +50,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand RefreshCommand { get; }
     public ICommand ApplyTransparencyCommand { get; }
     public ICommand RevertTransparencyCommand { get; }
+    public ICommand ApplyMinimalProfileCommand { get; }
+    public ICommand RevertMinimalProfileCommand { get; }
 
     private void Refresh()
     {

@@ -39,6 +39,20 @@
           <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18">
             <StackPanel><TextBlock Text="Sistem diski" Foreground="{DynamicResource MutedText}"/><TextBlock Text="{Binding SystemInfo.Disk}" FontSize="18" Margin="0,7,0,0"/></StackPanel>
           </Border>
+          <TextBlock Text="Linux-benzeri minimal profil" FontSize="19" FontWeight="SemiBold" Margin="0,22,0,12"/>
+          <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18">
+            <Grid>
+              <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="Sade ve düşük dikkat dağıtmalı görünüm" FontSize="16" FontWeight="SemiBold"/>
+                <TextBlock Text="Koyu mod, azaltılmış şeffaflık ve sol görev çubuğu hizası. Explorer dosyaları veya güvenlik ayarları değiştirilmez." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,12,0"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <Button Content="Profili uygula" Command="{Binding ApplyMinimalProfileCommand}"/>
+                <Button Content="Profili geri al" Command="{Binding RevertMinimalProfileCommand}" Background="#CBD5E1"/>
+              </StackPanel>
+            </Grid>
+          </Border>
         </UniformGrid>
         <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,12,0,0">
           <Grid>

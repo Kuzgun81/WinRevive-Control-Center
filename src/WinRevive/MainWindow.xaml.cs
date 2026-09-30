@@ -18,6 +18,10 @@ public partial class MainWindow : Window
             new TransparencyOptimizationRule(
                 new RegistryService(),
                 new FileLogger(),
+                new OperationHistoryService()),
+            new MinimalProfileService(
+                new RegistryService(),
+                new FileLogger(),
                 new OperationHistoryService()));
         DataContext = viewModel;
         ThemeService.Apply(viewModel.Theme);
