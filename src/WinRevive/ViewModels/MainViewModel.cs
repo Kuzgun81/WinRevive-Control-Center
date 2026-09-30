@@ -24,6 +24,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
+    private string _wallpaperPath = string.Empty;
 
     public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications)
     {
@@ -57,6 +58,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ApplyBlueAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("00A4EF")));
         ApplyPurpleAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("8764B8")));
         RevertAccentCommand = new ActionCommand(() => Run(() => _personalization.RevertAccent()));
+        ApplyWallpaperCommand = new ActionCommand(() => Run(() => _personalization.ApplyWallpaper(WallpaperPath)));
+        RevertWallpaperCommand = new ActionCommand(() => Run(() => _personalization.RevertWallpaper()));
         RefreshApplicationsCommand = new ActionCommand(RefreshApplications);
         Refresh();
         RefreshStartup();
@@ -76,6 +79,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string StatusMessage => "Hazır";
     public string TransparencyState { get => _transparencyState; private set => Set(ref _transparencyState, value); }
     public string LastOperation { get => _lastOperation; private set => Set(ref _lastOperation, value); }
+    public string WallpaperPath { get => _wallpaperPath; set => Set(ref _wallpaperPath, value); }
     public string Theme { get => _theme; set { if (Set(ref _theme, value)) _settings.Theme = value; } }
     public string MinimalProfileState => _minimalProfile.Detect();
     public ICommand RefreshCommand { get; }
@@ -94,6 +98,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ApplyBlueAccentCommand { get; }
     public ICommand ApplyPurpleAccentCommand { get; }
     public ICommand RevertAccentCommand { get; }
+    public ICommand ApplyWallpaperCommand { get; }
+    public ICommand RevertWallpaperCommand { get; }
     public ICommand RefreshApplicationsCommand { get; }
 
     private void Refresh()

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.ComponentModel;
+using Microsoft.Win32;
 using WinRevive.Services;
 using WinRevive.ViewModels;
 
@@ -53,5 +54,18 @@ public partial class MainWindow : Window
     {
         if (sender is MainViewModel viewModel && args.PropertyName == nameof(MainViewModel.Theme))
             ThemeService.Apply(viewModel.Theme);
+    }
+
+    private void SelectWallpaperClick(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainViewModel viewModel) return;
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Duvar kâğıdı|*.jpg;*.jpeg;*.png;*.bmp",
+            CheckFileExists = true,
+            Multiselect = false
+        };
+        if (dialog.ShowDialog(this) == true)
+            viewModel.WallpaperPath = dialog.FileName;
     }
 }

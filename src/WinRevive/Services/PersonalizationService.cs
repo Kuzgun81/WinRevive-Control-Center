@@ -1,5 +1,5 @@
 using Microsoft.Win32;
-using System.Text.Json;
+using System.Runtime.InteropServices;
 
 namespace WinRevive.Services;
 
@@ -40,10 +40,30 @@ public sealed class PersonalizationService
         var previous = ReadString(DesktopPath, "Wallpaper");
         var snapshotId = _snapshots.Create("personalization-wallpaper", new WallpaperState(previous));
         WriteString(DesktopPath, "Wallpaper", Path.GetFullPath(path));
+        ApplyWallpaperNative(Path.GetFullPath(path));
         if (!string.Equals(ReadString(DesktopPath, "Wallpaper"), Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Duvar kâğıdı yolu doğrulanamadı.");
         _history.Record("Personalization", "Applied", $"Wallpaper; snapshot {snapshotId}.");
-        return "Duvar kâğıdı yolu kaydedildi. Windows temayı yenilediğinde görünür.";
+        return "Duvar kâğıdı uygulandı ve doğrulandı.";
+    }
+
+    public string RevertWallpaper()
+    {
+        EnsureWindows();
+        var snapshot = _snapshots.ReadLatest<WallpaperState>("personalization-wallpaper")
+            ?? throw new InvalidOperationException("Duvar kâğıdı snapshot'ı bulunamadı.");
+        if (string.IsNullOrWhiteSpace(snapshot.State.Path))
+        {
+            DeleteValue(DesktopPath, "Wallpaper");
+        }
+        else
+        {
+            WriteString(DesktopPath, "Wallpaper", snapshot.State.Path);
+            ApplyWallpaperNative(snapshot.State.Path);
+        }
+
+        _history.Record("Personalization", "Reverted", $"Wallpaper snapshot {snapshot.Id}.");
+        return "Duvar kâğıdı geri alındı.";
     }
 
     public string RevertAccent()
@@ -86,6 +106,16 @@ public sealed class PersonalizationService
         using var key = Registry.CurrentUser.OpenSubKey(path, true);
         key?.DeleteValue(name, false);
     }
+
+    private static void ApplyWallpaperNative(string path)
+    {
+        if (!SystemParametersInfo(20, 0, path, 0x01 | 0x02))
+            throw new InvalidOperationException("Windows duvar kâğıdını uygulayamadı.");
+    }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SystemParametersInfo(uint action, uint parameter, string value, uint flags);
 
     private static void EnsureWindows()
     {
