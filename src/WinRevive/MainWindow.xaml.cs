@@ -11,6 +11,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         var capabilities = new CapabilityService();
+        var snapshots = new SnapshotService();
         var viewModel = new MainViewModel(
             new SystemInfoService(capabilities, new StartupService(), new SearchService()),
             new SettingsService(),
@@ -18,7 +19,8 @@ public partial class MainWindow : Window
             new TransparencyOptimizationRule(
                 new RegistryService(),
                 new FileLogger(),
-                new OperationHistoryService()),
+                new OperationHistoryService(),
+                snapshots),
             new MinimalProfileService(
                 new RegistryService(),
                 new FileLogger(),

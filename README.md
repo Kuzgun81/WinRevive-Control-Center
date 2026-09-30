@@ -36,6 +36,7 @@ Temel ilkeler:
 - HKCU `EnableTransparency` için Detect, Backup, Apply, Verify ve Revert
 - Linux-benzeri minimal profil: koyu mod, azaltılmış şeffaflık ve sol görev çubuğu hizası
 - Minimal profil için JSON snapshot ve geri alma
+- Ortak adlandırılmış snapshot altyapısı; kural yedekleri `LocalAppData\WinRevive\snapshots` altında tutulur
 - xUnit test altyapısı
 - Inno Setup başlangıç betiği
 
