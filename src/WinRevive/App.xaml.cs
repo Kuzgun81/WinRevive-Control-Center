@@ -22,5 +22,21 @@ public partial class App : Application
 
         _logger.Info("Application started.");
         base.OnStartup(e);
+
+        try
+        {
+            MainWindow = new MainWindow();
+            MainWindow.Show();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error("Application startup failed.", exception);
+            MessageBox.Show(
+                $"WinRevive açılamadı.\n\n{exception.Message}\n\nAyrıntılar şu dosyaya yazıldı:\n%LocalAppData%\\WinRevive\\logs\\app.log",
+                "WinRevive",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            Shutdown(1);
+        }
     }
 }
