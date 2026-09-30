@@ -30,8 +30,35 @@ Temel ilkeler:
 - Yerel JSON ayar ve JSONL işlem geçmişi
 - Yapılandırılmış yerel log
 - HKCU `EnableTransparency` için Detect, Backup, Apply, Verify ve Revert
+- Linux-benzeri minimal profil: koyu mod, azaltılmış şeffaflık ve sol görev çubuğu hizası
+- Minimal profil için JSON snapshot ve geri alma
 - xUnit test altyapısı
 - Inno Setup başlangıç betiği
+
+## Windows kurulumu
+
+### GitHub Actions ile test build'i
+
+1. Repository'nin **Actions** sekmesinden `Windows Release` workflow'unu çalıştırın.
+2. Workflow tamamlandığında `winrevive-publish` artifact'ini indirin.
+3. İçindeki `WinRevive.ControlCenter.exe` dosyasını Windows 11 üzerinde çalıştırın.
+
+### Setup.exe release'i
+
+Etiketlenmiş bir sürüm oluşturulduğunda workflow:
+
+1. Windows runner üzerinde restore, build ve test çalıştırır.
+2. Self-contained `win-x64` publish üretir.
+3. Inno Setup ile `WinRevive-Setup.exe` oluşturur.
+4. Publish klasörünü ve Setup.exe'yi GitHub Release'e ekler.
+
+Kurulum için önerilen yol: Setup.exe'yi indirip çalıştırın, hedef klasörü onaylayın,
+kurulum tamamlandıktan sonra Başlat menüsünden WinRevive Control Center'ı açın.
+Uygulama ilk açılışta yönetici yetkisi istemez; yalnızca yetki gerektiren özellikler
+gelecekte ayrı ve açıklamalı bir UAC akışıyla eklenecektir.
+
+> Bu Linux çalışma ortamında sahte bir `.exe` üretilmez. Resmi Windows artifact'i
+> yalnızca Windows runner üzerinde derlenir ve testlerden sonra yayınlanır.
 
 ## Yol haritası
 

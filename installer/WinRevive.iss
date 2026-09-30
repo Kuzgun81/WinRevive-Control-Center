@@ -22,3 +22,6 @@ Source: "..\src\WinRevive\bin\Release\net8.0-windows\win-x64\publish\*"; DestDir
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{localappdata}\WinRevive"
