@@ -47,6 +47,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public string TransparencyState { get => _transparencyState; private set => Set(ref _transparencyState, value); }
     public string LastOperation { get => _lastOperation; private set => Set(ref _lastOperation, value); }
     public string Theme { get => _theme; set { if (Set(ref _theme, value)) _settings.Theme = value; } }
+    public string MinimalProfileState => _minimalProfile.Detect();
     public ICommand RefreshCommand { get; }
     public ICommand ApplyTransparencyCommand { get; }
     public ICommand RevertTransparencyCommand { get; }
@@ -59,6 +60,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         {
             SystemInfo = _systemInfoService.Read();
             TransparencyState = _rule.Detect();
+            OnPropertyChanged(nameof(MinimalProfileState));
             LastOperation = _history.ReadLatest() is { } latest
                 ? $"{latest.Operation}: {latest.Status} ({latest.Detail})"
                 : "Sistem bilgileri yenilendi.";
@@ -78,6 +80,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         {
             LastOperation = operation();
             TransparencyState = _rule.Detect();
+            OnPropertyChanged(nameof(MinimalProfileState));
             LoadRecentOperations();
         }
         catch (Exception ex) { _logger.Error("Optimization operation failed.", ex); LastOperation = "İşlem başarısız: " + ex.Message; }
