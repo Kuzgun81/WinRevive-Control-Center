@@ -4,9 +4,14 @@ namespace WinRevive.Services;
 
 public sealed class SnapshotService
 {
-    private readonly string _root = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "WinRevive", "snapshots");
+    private readonly string _root;
+
+    public SnapshotService(string? root = null)
+    {
+        _root = root ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WinRevive", "snapshots");
+    }
 
     public string Create<T>(string scope, T state)
     {
