@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace WinRevive.Services;
 
@@ -46,6 +47,7 @@ public sealed class ExplorerPersonalizationService
         WriteValue(valueName, snapshot.State.Value);
         if (ReadValue(valueName) != snapshot.State.Value)
             throw new InvalidOperationException("Explorer ayarı geri alınamadı.");
+        RefreshExplorer();
         _history.Record("Explorer", "Reverted", $"{scope}; snapshot {snapshot.Id}.");
         return $"Explorer ayarı geri alındı: {scope}.";
     }
@@ -58,8 +60,9 @@ public sealed class ExplorerPersonalizationService
         WriteValue(valueName, value);
         if (ReadValue(valueName) != value)
             throw new InvalidOperationException($"Explorer ayarı doğrulanamadı: {valueName}.");
+        RefreshExplorer();
         _history.Record("Explorer", "Applied", $"{scope}; snapshot {snapshotId}; value {value}.");
-        return message;
+        return $"{message} Değer: {value}; Explorer yenilendi.";
     }
 
     private static int? ReadValue(string name)
@@ -80,6 +83,25 @@ public sealed class ExplorerPersonalizationService
         if (!OperatingSystem.IsWindows())
             throw new PlatformNotSupportedException("Explorer ayarları yalnızca Windows'ta kullanılabilir.");
     }
+
+    private static void RefreshExplorer()
+    {
+        SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
+        SendMessageTimeout(new IntPtr(0xFFFF), 0x001A, IntPtr.Zero, IntPtr.Zero, 0x0002, 1000, out _);
+    }
+
+    [DllImport("shell32.dll")]
+    private static extern void SHChangeNotify(uint eventId, uint flags, IntPtr item1, IntPtr item2);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr SendMessageTimeout(
+        IntPtr window,
+        uint message,
+        IntPtr wParam,
+        IntPtr lParam,
+        uint flags,
+        uint timeout,
+        out IntPtr result);
 
     public sealed record ExplorerValue(string Name, int? Value);
 }

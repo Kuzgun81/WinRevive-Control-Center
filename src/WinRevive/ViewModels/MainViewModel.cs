@@ -72,6 +72,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ApplyLowHardwareProfileCommand = new ActionCommand(() => Run(() => _profiles.Apply("low-hardware")));
         ApplyBlueAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("00A4EF")));
         ApplyPurpleAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("8764B8")));
+        ApplyGreenAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("107C10")));
+        ApplyOrangeAccentCommand = new ActionCommand(() => Run(() => _personalization.ApplyAccent("D83B01")));
         RevertAccentCommand = new ActionCommand(() => Run(() => _personalization.RevertAccent()));
         ApplyWallpaperCommand = new ActionCommand(() => Run(() => _personalization.ApplyWallpaper(WallpaperPath)));
         RevertWallpaperCommand = new ActionCommand(() => Run(() => _personalization.RevertWallpaper()));
@@ -139,6 +141,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ApplyLowHardwareProfileCommand { get; }
     public ICommand ApplyBlueAccentCommand { get; }
     public ICommand ApplyPurpleAccentCommand { get; }
+    public ICommand ApplyGreenAccentCommand { get; }
+    public ICommand ApplyOrangeAccentCommand { get; }
     public ICommand RevertAccentCommand { get; }
     public ICommand ApplyWallpaperCommand { get; }
     public ICommand RevertWallpaperCommand { get; }
@@ -170,7 +174,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 ? $"{latest.Operation}: {latest.Status} ({latest.Detail})"
                 : "Sistem bilgileri yenilendi.";
             LoadRecentOperations();
-            RefreshSnapshots();
+            RefreshSnapshots(false);
             OnPropertyChanged(nameof(SystemInfo));
             LastOperation = "Sistem bilgileri güncellendi.";
             StatusMessage = "Hazır";
@@ -193,7 +197,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             TransparencyState = _rule.Detect();
             OnPropertyChanged(nameof(MinimalProfileState));
             LoadRecentOperations();
-            RefreshSnapshots();
+            RefreshSnapshots(false);
             StatusMessage = "İşlem tamamlandı";
         }
         catch (Exception ex)
@@ -205,14 +209,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
         finally { IsBusy = false; }
     }
 
-    private void RefreshStartup()
+    private void RefreshStartup(bool report = true)
     {
         RunReadOnly("Başlangıç girdileri yenileniyor...", () =>
         {
             StartupEntries.Clear();
             foreach (var entry in _startup.ReadEntries()) StartupEntries.Add(entry);
             LastOperation = $"{StartupEntries.Count} başlangıç girdisi okundu.";
-        });
+        }, report);
     }
 
     private void RefreshApplications()
@@ -226,7 +230,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         });
     }
 
-    private void RefreshSnapshots()
+    private void RefreshSnapshots(bool report = true)
     {
         RunReadOnly("Snapshot listesi yenileniyor...", () =>
         {
@@ -234,28 +238,34 @@ public sealed class MainViewModel : INotifyPropertyChanged
             foreach (var snapshot in _snapshots.List())
                 Snapshots.Add(snapshot);
             LastOperation = $"{Snapshots.Count} snapshot listelendi.";
-        });
+        }, report);
     }
 
-    private void ScanCleanup()
+    private void ScanCleanup(bool report = true)
     {
-        BeginOperation("Geçici dosyalar taranıyor...");
+        if (report) BeginOperation("Geçici dosyalar taranıyor...");
         try
         {
             CleanupItems.Clear();
             foreach (var item in _cleanup.Scan()) CleanupItems.Add(item);
             _cleanupEstimatedBytes = CleanupItems.Sum(item => item.SizeBytes);
             OnPropertyChanged(nameof(CleanupSummary));
-            LastOperation = $"Temizlik taraması tamamlandı: {CleanupItems.Count} dosya bulundu.";
-            StatusMessage = "Tarama tamamlandı";
+            if (report)
+            {
+                LastOperation = $"Temizlik taraması tamamlandı: {CleanupItems.Count} dosya bulundu.";
+                StatusMessage = "Tarama tamamlandı";
+            }
         }
         catch (Exception ex)
         {
             _logger.Error("Cleanup scan failed.", ex);
-            LastOperation = "Temizlik taraması başarısız: " + ex.Message;
-            StatusMessage = "Tarama başarısız";
+            if (report)
+            {
+                LastOperation = "Temizlik taraması başarısız: " + ex.Message;
+                StatusMessage = "Tarama başarısız";
+            }
         }
-        finally { IsBusy = false; }
+        finally { if (report) IsBusy = false; }
     }
 
     private void DeleteCleanup()
@@ -269,7 +279,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             LastOperation = result.Failures.Count == 0
                 ? $"Temizlik tamamlandı: {result.DeletedFiles} dosya, {FormatBytes(result.FreedBytes)}."
                 : $"Temizlik kısmen tamamlandı: {result.DeletedFiles} dosya; {result.Failures.Count} hata.";
-            ScanCleanup();
+            ScanCleanup(false);
             LoadRecentOperations();
             StatusMessage = result.Failures.Count == 0 ? "Temizlik tamamlandı" : "Temizlik kısmen tamamlandı";
         }
@@ -316,9 +326,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
             BeginOperation("Süreç için güvenli kapanış isteniyor...");
             try
             {
-                LastOperation = _processes.RequestSafeStop(SelectedProcess);
+                var result = _processes.RequestSafeStop(SelectedProcess);
                 _history.Record("Process", "RequestedSafeStop", $"{SelectedProcess.Name} ({SelectedProcess.Id})");
                 RefreshMemory();
+                LastOperation = result;
                 LoadRecentOperations();
                 StatusMessage = "Süreç işlemi tamamlandı";
             }
@@ -355,7 +366,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 throw new InvalidOperationException("Snapshot bulunamadı veya silinemedi.");
             _history.Record("Snapshots", "Deleted", SelectedSnapshot.Id);
             LastOperation = $"Snapshot silindi: {SelectedSnapshot.Id}";
-            RefreshSnapshots();
+            RefreshSnapshots(false);
             StatusMessage = "Snapshot silindi";
         }
         catch (Exception ex)
@@ -376,13 +387,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
             return;
         }
         Run(() => _startupManagement.Disable(SelectedStartup));
-        RefreshStartup();
+        RefreshStartup(false);
     }
 
     private void RunStartup(Func<string> operation)
     {
         Run(operation);
-        RefreshStartup();
+        RefreshStartup(false);
     }
 
     private void LoadRecentOperations()
@@ -392,23 +403,29 @@ public sealed class MainViewModel : INotifyPropertyChanged
             RecentOperations.Add($"{item.Timestamp.LocalDateTime:g} • {item.Operation} • {item.Status} • {item.Detail}");
     }
 
-    private void RunReadOnly(string message, Action action)
+    private void RunReadOnly(string message, Action action, bool report = true)
     {
-        BeginOperation(message);
+        if (report) BeginOperation(message);
         try
         {
             action();
-            StatusMessage = "Hazır";
-            if (string.IsNullOrWhiteSpace(LastOperation) || LastOperation.EndsWith("..."))
-                LastOperation = "Okuma işlemi tamamlandı.";
+            if (report)
+            {
+                StatusMessage = "Hazır";
+                if (string.IsNullOrWhiteSpace(LastOperation) || LastOperation.EndsWith("..."))
+                    LastOperation = "Okuma işlemi tamamlandı.";
+            }
         }
         catch (Exception ex)
         {
             _logger.Error("Read-only operation failed.", ex);
-            LastOperation = "Okuma başarısız: " + ex.Message;
-            StatusMessage = "Okuma başarısız";
+            if (report)
+            {
+                LastOperation = "Okuma başarısız: " + ex.Message;
+                StatusMessage = "Okuma başarısız";
+            }
         }
-        finally { IsBusy = false; }
+        finally { if (report) IsBusy = false; }
     }
 
     private void BeginOperation(string message)

@@ -26,8 +26,9 @@ public sealed class PersonalizationService
         WriteDword(AccentPath, "AccentColorMenu", unchecked((int)color));
         if (ReadDword(AccentPath, "AccentColorMenu") != unchecked((int)color))
             throw new InvalidOperationException("Accent rengi doğrulanamadı.");
+        BroadcastThemeChange();
         _history.Record("Personalization", "Applied", $"Accent {hexColor}; snapshot {snapshotId}.");
-        return $"Accent rengi uygulandı: #{hexColor}.";
+        return $"Accent rengi uygulandı ve Windows'a bildirildi: #{hexColor}.";
     }
 
     public string ApplyWallpaper(string path)
@@ -73,6 +74,7 @@ public sealed class PersonalizationService
             ?? throw new InvalidOperationException("Accent snapshot bulunamadı.");
         if (snapshot.State.Value is int value) WriteDword(AccentPath, "AccentColorMenu", value);
         else DeleteValue(AccentPath, "AccentColorMenu");
+        BroadcastThemeChange();
         _history.Record("Personalization", "Reverted", $"Accent snapshot {snapshot.Id}.");
         return "Accent rengi geri alındı.";
     }
@@ -113,9 +115,24 @@ public sealed class PersonalizationService
             throw new InvalidOperationException("Windows duvar kâğıdını uygulayamadı.");
     }
 
+    private static void BroadcastThemeChange()
+    {
+        SendMessageTimeout(new IntPtr(0xFFFF), 0x001A, IntPtr.Zero, IntPtr.Zero, 0x0002, 1000, out _);
+    }
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SystemParametersInfo(uint action, uint parameter, string value, uint flags);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr SendMessageTimeout(
+        IntPtr window,
+        uint message,
+        IntPtr wParam,
+        IntPtr lParam,
+        uint flags,
+        uint timeout,
+        out IntPtr result);
 
     private static void EnsureWindows()
     {
