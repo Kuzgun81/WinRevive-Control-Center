@@ -62,6 +62,11 @@ Etiketli sürüm oluşturulduğunda `.github/workflows/windows-release.yml` dosy
 Windows üzerinde build, test, self-contained publish ve Inno Setup paketlemesini
 çalıştırır.
 
+## Katkıda bulunanlar
+
+- [Kuzgun81](https://github.com/Kuzgun81)
+- [GitHub Copilot](https://github.com/apps/github-copilot-cli)
+
 ## Lisans
 
 `LICENSE` dosyasındaki özel lisans geçerlidir. Kaynak kodu ve release dosyaları
