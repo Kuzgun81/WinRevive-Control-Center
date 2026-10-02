@@ -18,6 +18,7 @@ public static class ThemeService
         resources["AccentBrush"] = Brush(dark ? "#38BDF8" : "#0284C7");
         resources["SecondaryButtonBackground"] = Brush(dark ? "#26364F" : "#E2E8F0");
         resources["SecondaryButtonForeground"] = Brush(dark ? "#E2E8F0" : "#1E293B");
+        resources["SelectionBackground"] = Brush(dark ? "#164E63" : "#BAE6FD");
     }
 
     private static SolidColorBrush Brush(string color) => new((Color)ColorConverter.ConvertFromString(color));

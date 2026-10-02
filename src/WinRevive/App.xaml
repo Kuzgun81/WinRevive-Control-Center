@@ -11,6 +11,7 @@
     <SolidColorBrush x:Key="AccentBrush" Color="#38BDF8"/>
     <SolidColorBrush x:Key="SecondaryButtonBackground" Color="#26364F"/>
     <SolidColorBrush x:Key="SecondaryButtonForeground" Color="#E2E8F0"/>
+    <SolidColorBrush x:Key="SelectionBackground" Color="#164E63"/>
     <Style TargetType="TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
     </Style>
@@ -22,6 +23,30 @@
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="FontWeight" Value="SemiBold"/>
       <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+      <Setter Property="RenderTransform">
+        <Setter.Value>
+          <ScaleTransform ScaleX="1" ScaleY="1"/>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Opacity" Value="0.9"/>
+          <Setter Property="RenderTransform">
+            <Setter.Value>
+              <ScaleTransform ScaleX="1.02" ScaleY="1.02"/>
+            </Setter.Value>
+          </Setter>
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Opacity" Value="0.75"/>
+          <Setter Property="RenderTransform">
+            <Setter.Value>
+              <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+            </Setter.Value>
+          </Setter>
+        </Trigger>
+      </Style.Triggers>
     </Style>
     <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Background" Value="{DynamicResource SecondaryButtonBackground}"/>
@@ -43,12 +68,71 @@
     <Style TargetType="TabControl">
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
     </Style>
     <Style TargetType="TabItem">
       <Setter Property="Foreground" Value="{DynamicResource MutedText}"/>
-      <Setter Property="Padding" Value="16,12"/>
-      <Setter Property="Margin" Value="0,0,10,6"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Padding" Value="16,11"/>
+      <Setter Property="Margin" Value="0,0,12,6"/>
       <Setter Property="FontSize" Value="14"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="TabItem">
+            <Border x:Name="TabBorder" Background="{TemplateBinding Background}"
+                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+              <ContentPresenter ContentSource="Header"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                TextElement.FontWeight="{TemplateBinding FontWeight}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+              </Trigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource SelectionBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="ListBox">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="4"/>
+    </Style>
+    <Style TargetType="ListBoxItem">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+      <Setter Property="Padding" Value="8,7"/>
+      <Setter Property="Margin" Value="0,2"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="6"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource SurfaceBackground}"/>
+              </Trigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource SelectionBackground}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryText}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
     <Style x:Key="PanelCard" TargetType="Border">
       <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
