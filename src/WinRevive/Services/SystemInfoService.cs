@@ -27,8 +27,9 @@ public sealed class SystemInfoService
         var memory = new MemoryDiagnosticsService().Read();
         var systemRoot = Path.GetPathRoot(Environment.SystemDirectory);
         var drive = systemRoot is null ? null : new DriveInfo(systemRoot);
+        var memoryUsage = memory.TotalBytes == 0 ? 0 : memory.UsedBytes * 100d / memory.TotalBytes;
         var memorySummary = memory.TotalBytes > 0
-            ? $"{FormatBytes(memory.TotalBytes)} toplam • {FormatBytes(memory.AvailableBytes)} kullanılabilir • %{memory.TotalBytes == 0 ? 0 : memory.UsedBytes * 100d / memory.TotalBytes:0} kullanım"
+            ? $"{FormatBytes(memory.TotalBytes)} toplam • {FormatBytes(memory.AvailableBytes)} kullanılabilir • %{memoryUsage:0} kullanım"
             : memory.Summary;
         var disk = drive is null
             ? "Bilinmiyor"
