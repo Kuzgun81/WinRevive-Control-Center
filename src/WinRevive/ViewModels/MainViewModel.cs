@@ -61,7 +61,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         RevertTransparencyCommand = new ActionCommand(() => Run(() => _rule.Revert()));
         ApplyMinimalProfileCommand = new ActionCommand(() => Run(() => _minimalProfile.Apply()));
         RevertMinimalProfileCommand = new ActionCommand(() => Run(() => _minimalProfile.Revert()));
-        RefreshStartupCommand = new ActionCommand(RefreshStartup);
+        RefreshStartupCommand = new ActionCommand(() => RefreshStartup());
         DisableSelectedStartupCommand = new ActionCommand(DisableSelectedStartup);
         RevertStartupCommand = new ActionCommand(() => RunStartup(_startupManagement.RevertLatest));
         RepairSearchCommand = new ActionCommand(() => Run(() => _search.Repair()));
@@ -78,7 +78,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ApplyWallpaperCommand = new ActionCommand(() => Run(() => _personalization.ApplyWallpaper(WallpaperPath)));
         RevertWallpaperCommand = new ActionCommand(() => Run(() => _personalization.RevertWallpaper()));
         RefreshApplicationsCommand = new ActionCommand(RefreshApplications);
-        RefreshSnapshotsCommand = new ActionCommand(RefreshSnapshots);
+        RefreshSnapshotsCommand = new ActionCommand(() => RefreshSnapshots());
         DeleteSelectedSnapshotCommand = new ActionCommand(DeleteSelectedSnapshot);
         ShowFileExtensionsCommand = new ActionCommand(() => Run(() => _explorer.ApplyFileExtensions(true)));
         HideFileExtensionsCommand = new ActionCommand(() => Run(() => _explorer.ApplyFileExtensions(false)));
@@ -88,7 +88,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         DisableCompactViewCommand = new ActionCommand(() => Run(() => _explorer.ApplyCompactView(false)));
         OpenThisPcCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(true)));
         OpenHomeCommand = new ActionCommand(() => Run(() => _explorer.ApplyLaunchLocation(false)));
-        ScanCleanupCommand = new ActionCommand(ScanCleanup);
+        ScanCleanupCommand = new ActionCommand(() => ScanCleanup());
         DeleteCleanupCommand = new ActionCommand(DeleteCleanup);
         RefreshMemoryCommand = new ActionCommand(RefreshMemory);
         StopSelectedProcessCommand = new ActionCommand(StopSelectedProcess);
