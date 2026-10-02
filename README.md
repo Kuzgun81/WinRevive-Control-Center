@@ -4,12 +4,14 @@ Windows 11 için güvenli ve geri alınabilir sistem yönetim paneli. Ayarlar
 uygulanmadan önce snapshot alınır; desteklenmeyen veya başarısız işlemler
 başarı gibi gösterilmez.
 
+**Güncel sürüm:** `v0.3.0`
+
 ## Kurulum
 
 ### Önerilen yöntem: Setup
 
-1. GitHub'da **Releases** sayfasını açın.
-2. En son sürümün **Assets** bölümünden `WinRevive-Setup.exe` dosyasını indirin.
+1. GitHub'da **Releases** sayfasını açın ve `v0.3.0` sürümünü seçin.
+2. Bu sürümün **Assets** bölümünden `WinRevive-Setup.exe` dosyasını indirin.
 3. Dosyaya sağ tıklayın, **Özellikler** bölümünde **Engellemeyi kaldır** görünüyorsa
    işaretleyip **Uygula**'ya basın.
 4. `WinRevive-Setup.exe` dosyasını çalıştırın ve kurulum sihirbazında **Install**
@@ -42,7 +44,7 @@ tıklamak uygulamayı tarayıcı içinde açmaz; önce indirmeniz gerekir.
 
 - Windows 11
 - 64-bit x64 işlemci
-- Release kurulumu için `WinRevive-Setup.exe`
+- `v0.3.0` Release kurulumu için `WinRevive-Setup.exe`
 
 Uygulama yalnızca gerçekten gerekli işlemlerde UAC ister. Windows güvenlik
 mekanizmalarını atlatmaz. Geliştirme aşamasında olduğu için sistem ayarlarını
