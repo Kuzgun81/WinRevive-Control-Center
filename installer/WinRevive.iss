@@ -1,5 +1,5 @@
 #define AppName "WinRevive Control Center"
-#define AppVersion "0.3.0"
+#define AppVersion "0.3.1"
 #define AppPublisher "WinRevive"
 #define AppExeName "WinRevive.ControlCenter.exe"
 

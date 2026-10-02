@@ -31,7 +31,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string _theme;
     private string _transparencyState = "Durum okunuyor...";
     private string _lastOperation = "Henüz işlem yapılmadı.";
+    private string _statusMessage = "Hazır";
     private string _wallpaperPath = string.Empty;
+    private bool _isBusy;
 
     public MainViewModel(SystemInfoService systemInfoService, SettingsService settings, FileLogger logger, TransparencyOptimizationRule rule, MinimalProfileService minimalProfile, StartupService startup, StartupManagementService startupManagement, SearchService search, OptimizationProfileService profiles, PersonalizationService personalization, ApplicationInventoryService applications, SnapshotService snapshots, ExplorerPersonalizationService explorer, CleanupService cleanup, MemoryDiagnosticsService memory, ProcessDiagnosticsService processes)
     {
@@ -112,7 +114,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
         "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...", "Okunuyor...",
         "Okunuyor...", "Okunuyor...");
-    public string StatusMessage => "Hazır";
+    public string StatusMessage { get => _statusMessage; private set => Set(ref _statusMessage, value); }
+    public bool IsBusy { get => _isBusy; private set => Set(ref _isBusy, value); }
     public string TransparencyState { get => _transparencyState; private set => Set(ref _transparencyState, value); }
     public string LastOperation { get => _lastOperation; private set => Set(ref _lastOperation, value); }
     public string WallpaperPath { get => _wallpaperPath; set => Set(ref _wallpaperPath, value); }
@@ -157,6 +160,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     private void Refresh()
     {
+        BeginOperation("Sistem taraması yapılıyor...");
         try
         {
             SystemInfo = _systemInfoService.Read();
@@ -168,16 +172,21 @@ public sealed class MainViewModel : INotifyPropertyChanged
             LoadRecentOperations();
             RefreshSnapshots();
             OnPropertyChanged(nameof(SystemInfo));
+            LastOperation = "Sistem bilgileri güncellendi.";
+            StatusMessage = "Hazır";
         }
         catch (Exception ex)
         {
             _logger.Error("Refresh failed.", ex);
             LastOperation = "Tarama başarısız: " + ex.Message;
+            StatusMessage = "Tarama başarısız";
         }
+        finally { IsBusy = false; }
     }
 
     private void Run(Func<string> operation)
     {
+        BeginOperation("İşlem yürütülüyor...");
         try
         {
             LastOperation = operation();
@@ -185,48 +194,73 @@ public sealed class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(MinimalProfileState));
             LoadRecentOperations();
             RefreshSnapshots();
+            StatusMessage = "İşlem tamamlandı";
         }
-        catch (Exception ex) { _logger.Error("Optimization operation failed.", ex); LastOperation = "İşlem başarısız: " + ex.Message; }
+        catch (Exception ex)
+        {
+            _logger.Error("Optimization operation failed.", ex);
+            LastOperation = "İşlem başarısız: " + ex.Message;
+            StatusMessage = "İşlem başarısız";
+        }
+        finally { IsBusy = false; }
     }
 
     private void RefreshStartup()
     {
-        StartupEntries.Clear();
-        foreach (var entry in _startup.ReadEntries()) StartupEntries.Add(entry);
+        RunReadOnly("Başlangıç girdileri yenileniyor...", () =>
+        {
+            StartupEntries.Clear();
+            foreach (var entry in _startup.ReadEntries()) StartupEntries.Add(entry);
+            LastOperation = $"{StartupEntries.Count} başlangıç girdisi okundu.";
+        });
     }
 
     private void RefreshApplications()
     {
-        InstalledApplications.Clear();
-        foreach (var application in _applications.Read())
-            InstalledApplications.Add(application);
+        RunReadOnly("Uygulama envanteri okunuyor...", () =>
+        {
+            InstalledApplications.Clear();
+            foreach (var application in _applications.Read())
+                InstalledApplications.Add(application);
+            LastOperation = $"{InstalledApplications.Count} kurulu uygulama okundu.";
+        });
     }
 
     private void RefreshSnapshots()
     {
-        Snapshots.Clear();
-        foreach (var snapshot in _snapshots.List())
-            Snapshots.Add(snapshot);
+        RunReadOnly("Snapshot listesi yenileniyor...", () =>
+        {
+            Snapshots.Clear();
+            foreach (var snapshot in _snapshots.List())
+                Snapshots.Add(snapshot);
+            LastOperation = $"{Snapshots.Count} snapshot listelendi.";
+        });
     }
 
     private void ScanCleanup()
     {
+        BeginOperation("Geçici dosyalar taranıyor...");
         try
         {
             CleanupItems.Clear();
             foreach (var item in _cleanup.Scan()) CleanupItems.Add(item);
             _cleanupEstimatedBytes = CleanupItems.Sum(item => item.SizeBytes);
             OnPropertyChanged(nameof(CleanupSummary));
+            LastOperation = $"Temizlik taraması tamamlandı: {CleanupItems.Count} dosya bulundu.";
+            StatusMessage = "Tarama tamamlandı";
         }
         catch (Exception ex)
         {
             _logger.Error("Cleanup scan failed.", ex);
             LastOperation = "Temizlik taraması başarısız: " + ex.Message;
+            StatusMessage = "Tarama başarısız";
         }
+        finally { IsBusy = false; }
     }
 
     private void DeleteCleanup()
     {
+        BeginOperation("Seçili geçici dosyalar siliniyor...");
         try
         {
             var result = _cleanup.Delete(CleanupItems.ToArray());
@@ -237,28 +271,37 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 : $"Temizlik kısmen tamamlandı: {result.DeletedFiles} dosya; {result.Failures.Count} hata.";
             ScanCleanup();
             LoadRecentOperations();
+            StatusMessage = result.Failures.Count == 0 ? "Temizlik tamamlandı" : "Temizlik kısmen tamamlandı";
         }
         catch (Exception ex)
         {
             _logger.Error("Cleanup failed.", ex);
             LastOperation = "Temizlik başarısız: " + ex.Message;
+            StatusMessage = "Temizlik başarısız";
         }
+        finally { IsBusy = false; }
     }
 
     private void RefreshMemory()
         {
+            BeginOperation("Bellek ve süreçler okunuyor...");
             try
             {
                 var memory = _memory.Read();
                 MemorySummary = $"{memory.Summary} • {memory.ProcessCount} süreç • Baskı: {memory.Pressure}";
                 Processes.Clear();
                 foreach (var process in _processes.Read()) Processes.Add(process);
+                LastOperation = "Bellek ve süreç listesi güncellendi.";
+                StatusMessage = "RAM analizi hazır";
             }
             catch (Exception ex)
             {
                 _logger.Error("Memory diagnostics failed.", ex);
                 MemorySummary = "Bellek analizi başarısız: " + ex.Message;
+                LastOperation = MemorySummary;
+                StatusMessage = "RAM analizi başarısız";
             }
+            finally { IsBusy = false; }
         }
 
         private void StopSelectedProcess()
@@ -266,21 +309,26 @@ public sealed class MainViewModel : INotifyPropertyChanged
             if (SelectedProcess is null)
             {
                 LastOperation = "Önce bir süreç seçin.";
+                StatusMessage = "Süreç seçilmedi";
                 return;
             }
 
+            BeginOperation("Süreç için güvenli kapanış isteniyor...");
             try
             {
                 LastOperation = _processes.RequestSafeStop(SelectedProcess);
                 _history.Record("Process", "RequestedSafeStop", $"{SelectedProcess.Name} ({SelectedProcess.Id})");
                 RefreshMemory();
                 LoadRecentOperations();
+                StatusMessage = "Süreç işlemi tamamlandı";
             }
             catch (Exception ex)
             {
                 _logger.Error("Safe process stop failed.", ex);
                 LastOperation = "Süreç durdurulamadı: " + ex.Message;
+                StatusMessage = "Süreç işlemi başarısız";
             }
+            finally { IsBusy = false; }
         }
     private static string FormatBytes(long bytes)
     {
@@ -296,9 +344,11 @@ public sealed class MainViewModel : INotifyPropertyChanged
         if (SelectedSnapshot is null)
         {
             LastOperation = "Önce silinecek bir snapshot seçin.";
+            StatusMessage = "Snapshot seçilmedi";
             return;
         }
 
+        BeginOperation("Snapshot siliniyor...");
         try
         {
             if (!_snapshots.Delete(SelectedSnapshot.Id))
@@ -306,12 +356,15 @@ public sealed class MainViewModel : INotifyPropertyChanged
             _history.Record("Snapshots", "Deleted", SelectedSnapshot.Id);
             LastOperation = $"Snapshot silindi: {SelectedSnapshot.Id}";
             RefreshSnapshots();
+            StatusMessage = "Snapshot silindi";
         }
         catch (Exception ex)
         {
             _logger.Error("Snapshot deletion failed.", ex);
             LastOperation = "Snapshot silinemedi: " + ex.Message;
+            StatusMessage = "Snapshot işlemi başarısız";
         }
+        finally { IsBusy = false; }
     }
 
     private void DisableSelectedStartup()
@@ -319,6 +372,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         if (SelectedStartup is null)
         {
             LastOperation = "Önce kullanıcı kapsamındaki bir başlangıç girdisi seçin.";
+            StatusMessage = "Başlangıç girdisi seçilmedi";
             return;
         }
         Run(() => _startupManagement.Disable(SelectedStartup));
@@ -336,6 +390,31 @@ public sealed class MainViewModel : INotifyPropertyChanged
         RecentOperations.Clear();
         foreach (var item in _history.ReadRecent())
             RecentOperations.Add($"{item.Timestamp.LocalDateTime:g} • {item.Operation} • {item.Status} • {item.Detail}");
+    }
+
+    private void RunReadOnly(string message, Action action)
+    {
+        BeginOperation(message);
+        try
+        {
+            action();
+            StatusMessage = "Hazır";
+            if (string.IsNullOrWhiteSpace(LastOperation) || LastOperation.EndsWith("..."))
+                LastOperation = "Okuma işlemi tamamlandı.";
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Read-only operation failed.", ex);
+            LastOperation = "Okuma başarısız: " + ex.Message;
+            StatusMessage = "Okuma başarısız";
+        }
+        finally { IsBusy = false; }
+    }
+
+    private void BeginOperation(string message)
+    {
+        IsBusy = true;
+        StatusMessage = message;
     }
 
     private bool Set<T>(ref T field, T value, [CallerMemberName] string? name = null)

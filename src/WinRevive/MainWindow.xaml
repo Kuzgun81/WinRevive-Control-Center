@@ -22,14 +22,23 @@
         <TextBlock Text="Windows kontrol merkezi"
                    Foreground="{DynamicResource MutedText}" Margin="0,5,0,0"/>
       </StackPanel>
-      <Border DockPanel.Dock="Right" Style="{StaticResource PanelCard}" Padding="12,8" VerticalAlignment="Center">
-        <TextBlock Text="{Binding StatusMessage}"
-                 Foreground="{DynamicResource MutedText}" VerticalAlignment="Center"/>
+      <Border DockPanel.Dock="Right" Style="{StaticResource PanelCard}" Padding="14,10" VerticalAlignment="Center"
+              ToolTip="Son çalıştırılan işlemin durumu ve sonucu burada görünür. Hata olursa ayrıntılar işlem geçmişine ve günlüğe yazılır.">
+        <StackPanel MinWidth="300">
+          <DockPanel>
+            <TextBlock Text="İşlem durumu" Foreground="{DynamicResource MutedText}"/>
+            <TextBlock DockPanel.Dock="Right" Text="{Binding StatusMessage}"
+                       Foreground="{DynamicResource AccentBrush}" FontWeight="SemiBold"/>
+          </DockPanel>
+          <TextBlock Text="{Binding LastOperation}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+          <ProgressBar Height="3" Margin="0,8,0,0" IsIndeterminate="True"
+                       Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </StackPanel>
       </Border>
     </DockPanel>
 
     <TabControl Grid.Row="1" TabStripPlacement="Left">
-      <TabItem Header="Dashboard">
+      <TabItem Header="Dashboard" ToolTip="Sistem özeti, donanım bilgileri ve Dosya Gezgini tercihleri.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Sistem özeti" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,12"/>
@@ -61,14 +70,14 @@
                 <TextBlock Text="Bu ayarlar yalnız kullanıcı profilindeki Explorer tercihlerini değiştirir ve her uygulamadan önce snapshot alır."
                            Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,10"/>
                 <WrapPanel>
-                  <Button Content="Uzantıları göster" Command="{Binding ShowFileExtensionsCommand}"/>
-                  <Button Content="Uzantıları gizle" Command="{Binding HideFileExtensionsCommand}"/>
-                  <Button Content="Gizli dosyaları göster" Command="{Binding ShowHiddenFilesCommand}"/>
-                  <Button Content="Gizli dosyaları gizle" Command="{Binding HideHiddenFilesCommand}"/>
-                  <Button Content="Kompakt görünüm" Command="{Binding EnableCompactViewCommand}"/>
-                  <Button Content="Normal görünüm" Command="{Binding DisableCompactViewCommand}"/>
-                  <Button Content="Bu Bilgisayar ile aç" Command="{Binding OpenThisPcCommand}"/>
-                  <Button Content="Ana Sayfa ile aç" Command="{Binding OpenHomeCommand}"/>
+                  <Button Content="Uzantıları göster" Command="{Binding ShowFileExtensionsCommand}" ToolTip="Dosya uzantılarını Explorer'da görünür yapar."/>
+                  <Button Content="Uzantıları gizle" Command="{Binding HideFileExtensionsCommand}" ToolTip="Dosya uzantılarını Explorer'da gizler."/>
+                  <Button Content="Gizli dosyaları göster" Command="{Binding ShowHiddenFilesCommand}" ToolTip="Gizli dosya ve klasörleri görünür yapar."/>
+                  <Button Content="Gizli dosyaları gizle" Command="{Binding HideHiddenFilesCommand}" ToolTip="Gizli dosya ve klasörleri yeniden gizler."/>
+                  <Button Content="Kompakt görünüm" Command="{Binding EnableCompactViewCommand}" ToolTip="Explorer klasör görünümünde daha sıkı satır aralığı kullanır."/>
+                  <Button Content="Normal görünüm" Command="{Binding DisableCompactViewCommand}" ToolTip="Explorer klasör görünümünü varsayılan aralığa döndürür."/>
+                  <Button Content="Bu Bilgisayar ile aç" Command="{Binding OpenThisPcCommand}" ToolTip="Explorer açılış konumunu Bu Bilgisayar yapar."/>
+                  <Button Content="Ana Sayfa ile aç" Command="{Binding OpenHomeCommand}" ToolTip="Explorer açılış konumunu Ana Sayfa yapar."/>
                 </WrapPanel>
               </StackPanel>
             </Border>
@@ -84,12 +93,13 @@
                 <TextBlock Text="{Binding SystemInfo.Applications}" Foreground="{DynamicResource MutedText}" Margin="0,4,0,0"/>
               </StackPanel>
             </Border>
-            <Button Content="Sistemi yeniden tara" Command="{Binding RefreshCommand}" HorizontalAlignment="Left" Margin="0,16,0,0"/>
+            <Button Content="Sistemi yeniden tara" Command="{Binding RefreshCommand}" HorizontalAlignment="Left" Margin="0,16,0,0"
+                    ToolTip="Windows, donanım, güvenlik ve uygulama özetini yeniden okur."/>
           </StackPanel>
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Bellek ve RAM">
+      <TabItem Header="Bellek ve RAM" ToolTip="Fiziksel RAM durumunu ve çalışan süreçlerin bellek kullanımını gösterir.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Bellek baskısı ve süreçler" Style="{StaticResource SectionTitle}"/>
@@ -99,7 +109,8 @@
               <StackPanel>
                 <DockPanel>
                   <TextBlock Text="{Binding MemorySummary}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,12,8"/>
-                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshMemoryCommand}"/>
+                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshMemoryCommand}"
+                          ToolTip="RAM ölçümünü ve süreç listesini yeniden okur."/>
                 </DockPanel>
                 <ListBox ItemsSource="{Binding Processes}" SelectedItem="{Binding SelectedProcess}" MaxHeight="420">
                   <ListBox.ItemTemplate>
@@ -121,14 +132,15 @@
                 </ListBox>
                 <Button Content="Seçili kullanıcı sürecine güvenli kapanış isteği gönder"
                         Command="{Binding StopSelectedProcessCommand}" Style="{StaticResource SecondaryButton}"
-                        HorizontalAlignment="Left" Margin="0,12,0,0"/>
+                        HorizontalAlignment="Left" Margin="0,12,0,0"
+                        ToolTip="Korunan süreçlere dokunmadan seçili kullanıcı sürecine normal kapanış isteği gönderir."/>
               </StackPanel>
             </Border>
           </StackPanel>
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Güvenli Profiller">
+      <TabItem Header="Güvenli Profiller" ToolTip="Snapshot alarak geri alınabilir görünüm ve sistem profillerini uygular.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Geri alınabilir Windows profilleri" FontSize="19" FontWeight="SemiBold"/>
@@ -147,7 +159,8 @@
                   <Button Content="Profili uygula" Command="{Binding ApplyMinimalProfileCommand}"/>
                   <Button Content="Profili geri al" Command="{Binding RevertMinimalProfileCommand}"
                           Background="{DynamicResource SecondaryButtonBackground}"
-                          Foreground="{DynamicResource SecondaryButtonForeground}"/>
+                          Foreground="{DynamicResource SecondaryButtonForeground}"
+                          ToolTip="Minimal profil snapshot'ını kullanarak önceki görünüm ayarlarını geri yükler."/>
                 </StackPanel>
               </Grid>
             </Border>
@@ -164,7 +177,8 @@
                   <Button Content="Uygula" Command="{Binding ApplyTransparencyCommand}"/>
                   <Button Content="Geri al" Command="{Binding RevertTransparencyCommand}"
                           Background="{DynamicResource SecondaryButtonBackground}"
-                          Foreground="{DynamicResource SecondaryButtonForeground}"/>
+                          Foreground="{DynamicResource SecondaryButtonForeground}"
+                          ToolTip="Şeffaflık ayarını son snapshot'taki değere geri yükler."/>
                 </StackPanel>
               </Grid>
             </Border>
@@ -172,7 +186,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Optimizasyon">
+      <TabItem Header="Optimizasyon" ToolTip="Windows güç planlarını ve düşük donanım profilini kontrollü biçimde uygular.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Ölçülü optimizasyon profilleri" FontSize="19" FontWeight="SemiBold"/>
@@ -182,35 +196,39 @@
               <StackPanel>
                 <TextBlock Text="Genel / dengeli" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="Windows dengeli güç planını etkinleştirir." Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
-                <Button Content="Uygula" Command="{Binding ApplyGeneralProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+                <Button Content="Uygula" Command="{Binding ApplyGeneralProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"
+                        ToolTip="Windows dengeli güç planını etkinleştirir."/>
               </StackPanel>
             </Border>
             <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,12,0,0">
               <StackPanel>
                 <TextBlock Text="Oyun / performans" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="Windows yüksek performans planını etkinleştirir; donanım üreticisi sürücülerini değiştirmez." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
-                <Button Content="Uygula" Command="{Binding ApplyGamingProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+                <Button Content="Uygula" Command="{Binding ApplyGamingProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"
+                        ToolTip="Windows yüksek performans güç planını etkinleştirir."/>
               </StackPanel>
             </Border>
             <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,12,0,0">
               <StackPanel>
                 <TextBlock Text="Pil / verimlilik" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="Windows güç tasarrufu planını etkinleştirir." Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
-                <Button Content="Uygula" Command="{Binding ApplyBatteryProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+                <Button Content="Uygula" Command="{Binding ApplyBatteryProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"
+                        ToolTip="Windows güç tasarrufu planını etkinleştirir."/>
               </StackPanel>
             </Border>
             <Border Background="{DynamicResource CardBackground}" CornerRadius="10" Padding="18" Margin="0,12,0,0">
               <StackPanel>
                 <TextBlock Text="Düşük donanım" FontSize="16" FontWeight="SemiBold"/>
                 <TextBlock Text="Geri alınabilir minimal görünüm profilini uygular; Windows sistem dosyalarını veya güvenlik ayarlarını değiştirmez." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
-                <Button Content="Uygula" Command="{Binding ApplyLowHardwareProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+                <Button Content="Uygula" Command="{Binding ApplyLowHardwareProfileCommand}" HorizontalAlignment="Left" Margin="0,10,0,0"
+                        ToolTip="Geri alınabilir düşük donanım görünüm profilini uygular."/>
               </StackPanel>
             </Border>
           </StackPanel>
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Temizlik">
+      <TabItem Header="Temizlik" ToolTip="Yalnızca onaylı geçici klasörleri tarar ve seçilen geçici dosyaları siler.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Güvenli temizlik" Style="{StaticResource SectionTitle}"/>
@@ -220,9 +238,11 @@
               <StackPanel>
                 <DockPanel>
                   <TextBlock Text="{Binding CleanupSummary}" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
-                  <Button DockPanel.Dock="Right" Content="Yeniden tara" Command="{Binding ScanCleanupCommand}"/>
+                  <Button DockPanel.Dock="Right" Content="Yeniden tara" Command="{Binding ScanCleanupCommand}"
+                          ToolTip="Kullanıcı ve Windows geçici klasörlerindeki dosyaları listeler."/>
                   <Button DockPanel.Dock="Right" Content="Taranan dosyaları temizle" Command="{Binding DeleteCleanupCommand}"
-                          Style="{StaticResource SecondaryButton}" Margin="0,0,8,8"/>
+                          Style="{StaticResource SecondaryButton}" Margin="0,0,8,8"
+                          ToolTip="Listelenen ve izin verilen geçici dosyaları siler; kişisel klasörleri seçmez."/>
                 </DockPanel>
                 <ListBox ItemsSource="{Binding CleanupItems}" SelectedItem="{Binding SelectedCleanupItem}" MaxHeight="360">
                   <ListBox.ItemTemplate>
@@ -241,7 +261,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Kişiselleştirme">
+      <TabItem Header="Kişiselleştirme" ToolTip="Accent rengi ve duvar kâğıdı gibi kullanıcı görünüm ayarlarını snapshot ile değiştirir.">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Windows görünüm merkezi" FontSize="19" FontWeight="SemiBold"/>
           <TextBlock Text="Tema ve duvar kâğıdı değişiklikleri snapshot alınarak uygulanır ve geri alınabilir."
@@ -250,11 +270,12 @@
             <StackPanel>
               <TextBlock Text="Accent rengi" FontSize="16" FontWeight="SemiBold"/>
               <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <Button Content="Mavi" Command="{Binding ApplyBlueAccentCommand}"/>
-                <Button Content="Mor" Command="{Binding ApplyPurpleAccentCommand}"/>
+                <Button Content="Mavi" Command="{Binding ApplyBlueAccentCommand}" ToolTip="Windows accent rengini mavi yapar."/>
+                <Button Content="Mor" Command="{Binding ApplyPurpleAccentCommand}" ToolTip="Windows accent rengini mor yapar."/>
                 <Button Content="Accent'i geri al" Command="{Binding RevertAccentCommand}"
                         Background="{DynamicResource SecondaryButtonBackground}"
-                        Foreground="{DynamicResource SecondaryButtonForeground}"/>
+                        Foreground="{DynamicResource SecondaryButtonForeground}"
+                        ToolTip="Accent rengini son snapshot'taki değere geri yükler."/>
               </StackPanel>
             </StackPanel>
           </Border>
@@ -267,17 +288,18 @@
                          ToolTip="JPG, JPEG, PNG veya BMP dosyası"/>
               </DockPanel>
               <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <Button Content="Uygula" Command="{Binding ApplyWallpaperCommand}"/>
+                <Button Content="Uygula" Command="{Binding ApplyWallpaperCommand}" ToolTip="Seçilen görseli kullanıcı duvar kâğıdı olarak uygular."/>
                 <Button Content="Geri al" Command="{Binding RevertWallpaperCommand}"
                         Background="{DynamicResource SecondaryButtonBackground}"
-                        Foreground="{DynamicResource SecondaryButtonForeground}"/>
+                        Foreground="{DynamicResource SecondaryButtonForeground}"
+                        ToolTip="Duvar kâğıdını son snapshot'taki görsele geri yükler."/>
               </StackPanel>
             </StackPanel>
           </Border>
         </StackPanel>
       </TabItem>
 
-      <TabItem Header="Uygulamalar / Güvenlik">
+      <TabItem Header="Uygulamalar / Güvenlik" ToolTip="Kurulu uygulamaları ve Windows güvenlik sağlayıcılarını salt-okunur gösterir.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Uygulamalar ve güvenlik" FontSize="19" FontWeight="SemiBold"/>
@@ -285,7 +307,8 @@
               <StackPanel>
                 <DockPanel>
                   <TextBlock Text="Kurulu uygulamalar" FontSize="16" FontWeight="SemiBold"/>
-                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshApplicationsCommand}"/>
+                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshApplicationsCommand}"
+                          ToolTip="Kurulu uygulama envanterini yeniden okur."/>
                 </DockPanel>
                 <TextBlock Text="Bu faz salt-okunur envanter sağlar. Kaldırma, güvenli uninstall helper fazından sonra açılacaktır."
                            Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
@@ -302,7 +325,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Sistem Analizi">
+      <TabItem Header="Sistem Analizi" ToolTip="Windows entegrasyonlarını değiştirmeden mevcut durumlarını gösterir.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Windows entegrasyon durumu" FontSize="19" FontWeight="SemiBold"/>
@@ -320,7 +343,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="Başlangıç / Search">
+      <TabItem Header="Başlangıç / Search" ToolTip="Kullanıcı başlangıç girdilerini yönetir ve Windows Search servis/dizin onarımı sunar.">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
           <StackPanel Margin="0,18,12,0">
             <TextBlock Text="Başlangıç ve Windows Search yönetimi" FontSize="19" FontWeight="SemiBold"/>
@@ -330,14 +353,17 @@
               <StackPanel>
                 <DockPanel>
                   <TextBlock Text="Başlangıç girdileri" FontSize="16" FontWeight="SemiBold"/>
-                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshStartupCommand}"/>
+                  <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshStartupCommand}"
+                          ToolTip="Kullanıcı kapsamındaki Run/RunOnce girdilerini yeniden okur."/>
                 </DockPanel>
                 <ListBox ItemsSource="{Binding StartupEntries}" SelectedItem="{Binding SelectedStartup}" Margin="0,10,0,0" MaxHeight="220"/>
                 <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                  <Button Content="Seçileni devre dışı bırak" Command="{Binding DisableSelectedStartupCommand}"/>
+                  <Button Content="Seçileni devre dışı bırak" Command="{Binding DisableSelectedStartupCommand}"
+                          ToolTip="Seçili kullanıcı başlangıç girdisini snapshot alarak devre dışı bırakır."/>
                   <Button Content="Son değişikliği geri al" Command="{Binding RevertStartupCommand}"
                           Background="{DynamicResource SecondaryButtonBackground}"
-                          Foreground="{DynamicResource SecondaryButtonForeground}"/>
+                          Foreground="{DynamicResource SecondaryButtonForeground}"
+                          ToolTip="Son başlangıç değişikliğini kaydedilen snapshot'tan geri yükler."/>
                 </StackPanel>
               </StackPanel>
             </Border>
@@ -347,8 +373,10 @@
                 <TextBlock Text="{Binding SystemInfo.SearchSummary}" Foreground="{DynamicResource MutedText}" Margin="0,6,0,0"/>
                 <TextBlock Text="Servis onarımı ve dizin yeniden oluşturma işlemleri yönetici yetkisi isteyebilir." Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,0"/>
                 <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                  <Button Content="Servisi onar / yeniden başlat" Command="{Binding RepairSearchCommand}"/>
-                  <Button Content="Dizini yeniden oluştur" Command="{Binding RebuildSearchCommand}" Margin="8,0,0,0"/>
+                  <Button Content="Servisi onar / yeniden başlat" Command="{Binding RepairSearchCommand}"
+                          ToolTip="Windows Search servisini yönetici onayıyla yeniden başlatır."/>
+                  <Button Content="Dizini yeniden oluştur" Command="{Binding RebuildSearchCommand}" Margin="8,0,0,0"
+                          ToolTip="Windows Search SystemIndex yeniden oluşturma isteği başlatır."/>
                 </StackPanel>
               </StackPanel>
             </Border>
@@ -356,7 +384,7 @@
         </ScrollViewer>
       </TabItem>
 
-      <TabItem Header="İşlem Geçmişi">
+      <TabItem Header="İşlem Geçmişi" ToolTip="Uygulanan işlemleri, doğrulama sonuçlarını ve hataları listeler.">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Apply / Verify / Revert geçmişi" FontSize="19" FontWeight="SemiBold"/>
           <TextBlock Text="{Binding LastOperation}" Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,8,0,0"/>
@@ -365,16 +393,18 @@
         </StackPanel>
       </TabItem>
 
-      <TabItem Header="Geri Alma Merkezi">
+      <TabItem Header="Geri Alma Merkezi" ToolTip="Oluşturulan snapshot'ları listeler ve yalnızca yedek dosyalarını siler.">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Snapshot ve geri alma merkezi" FontSize="19" FontWeight="SemiBold"/>
           <TextBlock Text="Snapshot dosyaları burada listelenir. Silme işlemi yalnızca yedek dosyasını kaldırır; sistem ayarını değiştirmez."
                      Foreground="{DynamicResource MutedText}" TextWrapping="Wrap" Margin="0,6,0,14"/>
           <DockPanel Margin="0,0,0,10">
-            <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshSnapshotsCommand}"/>
+            <Button DockPanel.Dock="Right" Content="Yenile" Command="{Binding RefreshSnapshotsCommand}"
+                    ToolTip="Snapshot listesini diskten yeniden okur."/>
             <Button DockPanel.Dock="Right" Content="Seçileni sil" Command="{Binding DeleteSelectedSnapshotCommand}"
                     Margin="0,0,8,0" Background="{DynamicResource SecondaryButtonBackground}"
-                    Foreground="{DynamicResource SecondaryButtonForeground}"/>
+                    Foreground="{DynamicResource SecondaryButtonForeground}"
+                    ToolTip="Seçili snapshot dosyasını siler; Windows ayarlarını geri almaz."/>
           </DockPanel>
           <ListBox ItemsSource="{Binding Snapshots}" SelectedItem="{Binding SelectedSnapshot}" MaxHeight="360">
             <ListBox.ItemTemplate>
@@ -392,7 +422,7 @@
         </StackPanel>
       </TabItem>
 
-      <TabItem Header="Ayarlar">
+      <TabItem Header="Ayarlar" ToolTip="WinRevive arayüz temasını değiştirir; Windows sistem ayarlarına dokunmaz.">
         <StackPanel Margin="0,18,12,0">
           <TextBlock Text="Arayüz ayarları" FontSize="19" FontWeight="SemiBold"/>
           <TextBlock Text="Yerel ayarlar kullanıcı profilinde saklanır." Foreground="{DynamicResource MutedText}" Margin="0,6,0,14"/>
